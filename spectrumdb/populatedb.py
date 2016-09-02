@@ -86,6 +86,13 @@ if __name__ == "__main__":
     root_dir = args.dir
     datasetName = args.datasetName
     action = args.action
+    if datasetName is None:
+        print "Please specify dataset name"
+        sys.exit()
+
+    if action == "populate" and root_dir is None:
+        print "Please specify root directory for the data set"
+        sys.exit()
 
     prefix_list  = set([])
     if action == "populate":

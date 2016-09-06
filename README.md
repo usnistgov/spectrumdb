@@ -7,7 +7,7 @@ into a mongodb collection which can later be queried and updated.
 
 # Prerequisites
 
-- Mongodb 3.3 (see mongodb.org)
+- Mongodb 3.3 (see mongodb.org), Install the MongoDB service by starting mongod.exe with the --install option. To use an alternate dbpath, specify the path in the configuration file (e.g. C:\mongodb\mongod.cfg) or on the command line with the --dbpath option. You can put the database in any directory on the filesystem.
 - Python 2.7.12 set your path to python.exe 
 - numpy (pip install numpy)
 - npTDMS ( get this from the fork https://github.com/usnistgov/npTDMS )

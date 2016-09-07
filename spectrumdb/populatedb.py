@@ -4,6 +4,8 @@ import argparse
 import nptdms
 import pymongo
 import json
+import nptdms
+from nptdms import TdmsFile
 
 
 
@@ -12,9 +14,11 @@ db = pymongo.MongoClient()
 
 
 
+
 def drop_metadata(datasetName):
     get_metadata(datasetName).drop()
     db.metadata.drop_collection("metadata." + datasetName)
+
 
 def get_metadata(datasetName):
     if "metadata." + datasetName in db.metadata.collection_names():
@@ -27,6 +31,13 @@ def get_metadata(datasetName):
 def extract_prefix(filename, prefix):
     prefixLength = len(filename) - len(prefix)
     return filename[0:prefixLength]
+
+def extract_timestamp(prefix):
+    pos = prefix.index('_')
+    ts = prefix[index+l, len(prefix)]
+    return int(ts)
+
+
 
 
 def recursive_walk_metadata(datasetName,folder,prefix_list):
@@ -47,6 +58,7 @@ def recursive_walk_metadata(datasetName,folder,prefix_list):
                 elif filename.endswith(".tdms"):
                     prefix = extract_prefix(filename,".tdms")
                     metadataType = "tdms"
+                    tdmsMetadata = TdmsFile(pathname).getJsonMetadata()
                 else:
                     continue
 
@@ -56,11 +68,15 @@ def recursive_walk_metadata(datasetName,folder,prefix_list):
                     metadata = {}
                     metadata["prefix"] = prefix
                     metadata[metadataType] = pathname
+                    if metadataType == "tdms":
+                        metadata["tdmsMetadata"] = tdmsMetadata
                     get_metadata(datasetName).insert(metadata)
                 else:
                     metadata[metadataType] = pathname
-                    get_metadata(datasetName).update({"prefix":prefix}, metadata, upsert =
-                        False)
+                    if metadataType == "tdms":
+                        metadata["tdmsMetadata"] = tdmsMetadata
+                    get_metadata(datasetName).update({"prefix":prefix},
+                            metadata, upsert = False)
 
                 prefix_list.add(prefix)
 

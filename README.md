@@ -7,20 +7,24 @@ into a mongodb collection which can later be queried and updated.
 
 # Prerequisites
 
-- Mongodb 3.3 (see mongodb.org). You can install mongod to start as a windows
-sevice as follows, for example:
+- Mongodb 3.3 (see mongodb.org), Install the MongoDB service by starting
+mongod.exe with the --install option. To use an alternate dbpath, specify
+the path in the configuration file (e.g. C:\mongodb\mongod.cfg) or on
+the command line with the --dbpath option. You can put the database in
+any directory on the filesystem.
 
    mongd.exe -install -dbpath c:/mongodb -log c:/Temp/mongolog.txt
 
+
 - Python 2.7.12 set your path to python.exe 
+- pymongo 
 - numpy (pip install numpy)
 - pytz (pip install pytz
 - npTDMS ( get this from the fork https://github.com/usnistgov/npTDMS )
-- Get a google timezone API key and set up the followng environment variable. GOOGLE\_TIMZONE\_API\_KEY in your windows environment. This is required to do time conversions from your lat/lon location where you gathered data to universal time. 
-
-You can install all dependencies in one shot by using 
-
-  pip install -r requirements.txt
+- Get a google timezone API key and set up the followng environment
+variable. GOOGLE\_TIMZONE\_API\_KEY in your windows environment. This
+is required to do time conversions from your lat/lon location where you
+gathered data to universal time. 
 
 
 

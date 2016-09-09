@@ -33,7 +33,7 @@ setup(
     'Intended Audience :: NIST CTL',
     'Natural Language :: English',
   ],
-  install_requires = ['nptdms', 'pymongo'],
+  install_requires = ['nptdms', 'numpy', 'pymongo'],
   entry_points = """
   """
 )

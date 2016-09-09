@@ -38,11 +38,29 @@ gathered data to universal time.
 Note: if you installed mongod as a service (see above), it should start when you restart windows.
   
 
-# Populating the db with new data
+# Example invocations
+
+Set up a dataset (the numbers below are just for illustrative purposes):
+
+   python populatedb.py -action create-dataset -dataset-name SanDiego -lat 32.715 -lon 117.161 -alt 100 
+
+
 
 Populate the DB (assuming the data lives in e:\) as follows
 
-  python populate_db.py -dir e:\ -datasetName SanDiego -lat 32.715 -lon 117.161 -alt 100 -action populate
+  python populatedb.py -action populate -dir e:\ -dataset-name SanDiego 
+
+Print the datasets in the Database:
+
+  python populatedb.py -action print-datasets
+
+Print all the metadata in the Database:
+
+  python populatedb.py -action print-metadata
+
+Delete a collection
+
+  python populatedb.py -action drop -dataset-name SanDiego
 
 Please do not put any spaces in the datasetName parameter (for example please dont use a string like "Virgina Beach". It is used to create a mongodb collection and mongodb does not like spaces in collection names!)
 

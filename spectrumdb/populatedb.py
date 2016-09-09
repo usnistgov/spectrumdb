@@ -235,6 +235,13 @@ def list_datasets():
     return result
 
 
+def print_datasets():
+    datasets = get_datasets()
+    cur = datasets.find()
+    for dataset in cur:
+        del dataset["_id"]
+        print json.dumps(dataset, indent=4)
+
 def dump_db(dataset_name):
     cur = get_metadata(dataset_name).find()
     for metadata in cur:
@@ -261,41 +268,41 @@ if __name__ == "__main__":
             "measurement system (e.g. America/Denver). "
             "Note: Do not use names such as EDT, MDT etc.", default = None)
 
-    parser.add_argument('-action', type = str,
-            help = "drop | populate | print", default = None)
+    parser.add_argument('action', type = str,
+            help = "drop | populate | print-datasets | create-dataset", default = None)
 
 
     args = parser.parse_args()
     root_dir = args.dir
     dataset_name = args.dataset_name
     action = args.action
-    if (action != "populate" and action  != "print" and action != "drop" and
-            action != "create-dataset") :
-        print ("Action must be populate or print or drop or create-dataset")
+    if (action != "populate" and action  != "print" and action !=
+            "print-metadata" and action != "create-dataset" and action !=
+            "print-datasets") :
+        print ("Action must be populate or print or "
+                " drop or print-dataset or create-dataset")
         sys.exit()
 
-
-    if dataset_name is None:
-        print "Please specify dataset name"
-        sys.exit()
-
-
-    if action is "populate" and (lat is None or lon is None or alt is None) :
-        print "Please specify location (lat/lon/alt) where data was gathered."
-        sys.exit()
-
-
-    if action == "populate" and root_dir is None:
-        print "Please specify root directory for the data set"
-        sys.exit()
 
     if action == "populate":
+        if dataset_name is None:
+            print "Please specify dataset name"
+            sys.exit()
+        if root_dir is None:
+            print "Please specify dir where data can be found name"
+            sys.exit()
         prefix_list  = set([])
         recursive_walk_metadata(dataset_name,root_dir,prefix_list)
     elif action == "drop":
+        if dataset_name is None:
+            print "Please specify dataset name"
+            sys.exit()
         purge_dataset(dataset_name)
     elif action == "create-dataset":
-        if (args.lat is None or args.lon is None or args.alt is None 
+        if dataset_name is None:
+            print "Please specify dataset name"
+            sys.exit()
+        if (args.lat is None or args.lon is None or args.alt is None
             or args.instrument_tz is None):
             print ("specify lat, lon, alt, instrument_tz")
             sys.exit()
@@ -304,7 +311,12 @@ if __name__ == "__main__":
         alt = float(args.alt)
         instrument_tz = args.instrument_tz
         create_dataset(dataset_name, lat, lon, alt, instrument_tz)
-    elif action == "dump":
+    elif action == "print-datasets":
+        print_datasets()
+    elif action == "print-metadata":
+        if dataset_name is None:
+            print "Please specify dataset name"
+            sys.exit()
         dump_db(dataset_name)
     else:
         print("Invalid action specified")

@@ -42,25 +42,24 @@ Note: if you installed mongod as a service (see above), it should start when you
 
 Set up a dataset (the numbers below are just for illustrative purposes):
 
-     python populatedb.py -action create-dataset -dataset-name SanDiego -lat 32.715 -lon 117.161 -alt 100 
-
+     python populatedb.py create-dataset -dataset-name SanDiego -lat 32.715 -lon 117.161 -alt 100 
 
 
 Populate the DB (assuming the data lives in e:\) as follows
 
-     python populatedb.py -action populate -dir e:\ -dataset-name SanDiego 
+     python populatedb.py populate -dir e:\ -dataset-name SanDiego 
 
 Print the datasets in the Database:
 
-     python populatedb.py -action print-datasets
+     python populatedb.py print-datasets
 
 Print all the metadata in the Database:
 
-     python populatedb.py -action print-metadata
+     python populatedb.py print-metadata -dataset-name SanDiego
 
 Delete a collection
 
-     python populatedb.py -action drop -dataset-name SanDiego
+     python populatedb.py drop -dataset-name SanDiego
 
 Please do not put any spaces in the datasetName parameter (for example please dont use a string like "Virgina Beach". It is used to create a mongodb collection and mongodb does not like spaces in collection names!)
 

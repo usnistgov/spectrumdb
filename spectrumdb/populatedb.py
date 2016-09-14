@@ -8,6 +8,8 @@ import nptdms
 import timezone
 import datetime
 import time
+import numpy as np
+import math
 from nptdms import TdmsFile
 
 
@@ -131,11 +133,22 @@ def debug_print_files(folder):
                 print folderName + "/" + filename
 
 
-
-def create_dataset(dataset_name, lat, lon, alt, instrument_tz) :
+def create_dataset(dataset_name=None,
+                lat=None,
+                lon=None,
+                alt=None,
+                instrument_tz=None,
+                antenna=None,
+                gain=None,
+                reflevel_dbm=None,
+                flo_mhz=None,
+                fmin=None,
+                fmax=None,
+                sample_rate=None,
+                fft_size=None):
     """
-    Create a dataset if it does not exist. Throw exception if it does 
-    exist
+    Create a dataset if it does not exist. Throw exception if it does
+    exist.
     """
     if dataset_exists(dataset_name):
         raise Exception("Dataset is already present")
@@ -149,6 +162,15 @@ def create_dataset(dataset_name, lat, lon, alt, instrument_tz) :
     tzId, tzName = timezone.getLocalTimeZoneFromGoogle(int(time.time()),
             lat,lon)
     info["measurementTz"] = tzId
+    info["antenna"] = antenna
+    info["gain"] = gain
+    info["reflevel_dbm"] = reflevel_dbm
+    info["fmin"] = fmin
+    info["fmax"] = fmax
+    info["flo_mhz"]= flo_mhz
+    info["sample_rate"] = sample_rate
+    info["fft_size"] = fft_size
+
     datasets.insert(info)
 
 def get_dataset(dataset_name):
@@ -159,6 +181,83 @@ def get_dataset(dataset_name):
     if retval is None:
         raise Exception("Dataset " + dataset_name + " not found ")
     return retval
+
+
+def compute_peak_stats_worker(fname,fmin,fmax,flo_mhz,fft_size,sample_rate,gain):
+    # convert amplifier gain to linear units
+    Vgain=pow(10,(gain/20.0))
+    # VST calibration in dB
+    VcaldB=1.64
+    Vcal=pow(10,(VcaldB/20.0))
+    # Load the data into a 2d array.
+    temp = np.loadtxt(fname,dtype='float',delimiter='\t')
+    # Normalize the data with fft size
+    z = temp/fft_size
+    #Apply calibrations for front end gain, cable loss, splitter loss
+    z = z/Vgain
+    z = z*Vcal
+    z_len = len(z)
+    #Frequency array for the FFT
+    fmhz = (float(sample_rate)/fft_size)*np.arange(-fft_size/2,fft_size/2) + flo_mhz
+    # Power values in dbm
+    z_dbm = 20*np.log10(z) - 10*np.log10(100) + 30
+    #set fc to frequency of peak power between 3520 MHz and fLO+100 MHz,
+    #excluding the LO. The following will return an index array.
+    fj = ((fmhz >= 3520) & (fmhz <= flo_mhz+100) & ((fmhz < flo_mhz-1) |
+        (fmhz > flo_mhz+1))).nonzero()
+    # fmhz_j is the frequencies of interest in our range 
+    fmhz_j = fmhz[fj]
+    # slice the array to the indices of interest. All rows and a subset of
+    # columns
+    sliced_array = z_dbm[:,fj]
+    # compute the 2d index value of the max location. argmax retuns a 1-d
+    # result. unravel_index gives the 2d index values.
+    fci = np.unravel_index(np.argmax(sliced_array),np.shape(sliced_array))
+    # The max power value at the location of interest.
+    pmax_dbm = sliced_array[fci]
+    # The center frequency where the power is max.
+    fc_mhz = fmhz_j[fci[0]]
+    # The frequencies where we want to compute statistics
+    fi = np.arange(fmin,fmax + 10,10)
+    # initialize indices. These are indices which fmhz is closest to fi
+    # There might be a way to do this without looping in numpy
+    k = 0
+    m = 0
+    j = []
+    while (m < len(fmhz) and k < len(fi)):
+        if fmhz[m] >= fi[k]:
+            k += 1
+            j.append(m)
+        else:
+            m += 1
+    # now compute the power vector for each column
+    zisq = np.power(z[:,j],2)
+    # Compute the mean for each column
+    zsq_avg = np.mean(zisq,axis=0)
+    # Compute the 75th. percentile for each column
+    zsq_75 = np.percentile(zisq,75,axis=0)
+    # Compute the 25th. percentile for each column
+    zsq_25 = np.percentile(zisq,25,axis=0)
+    # Compute the mean value in dbm 
+    pmean_dBm=10*np.log10(zsq_avg)-10*np.log10(100)+30
+    # Compute the inter quartile range for each column
+    iqr_dBm=10*np.log10(zsq_75)-10*np.log10(zsq_25)
+
+    print iqr_dBm
+
+
+
+
+def compute_peak_stats(dataset_name,fname) :
+    dataset = get_dataset(dataset_name)
+    fmin = dataset['fmin']
+    fmax = dataset['fmax']
+    flo_mhz = dataset["flo_mhz"]
+    sample_rate = dataset["sample_rate"]
+    fft_size = dataset["fft_size"]
+    gain = dataset["gain"]
+    compute_peak_stats_worker(fname,fmin,fmax,flo_mhz,fft_size,sample_rate,gain)
+
 
 
 def recursive_walk_metadata(dataset_name,folder,prefix_list):
@@ -249,74 +348,141 @@ def dump_db(dataset_name):
         print (json.dumps(metadata,indent = 4))
 
 if __name__ == "__main__":
-    global lat, lon, alt
-    parser = argparse.ArgumentParser(description = "Args for populating "
-            "the DB")
-    parser.add_argument('-dir', type = str , help =  "root directory for the"
+    parser = argparse.ArgumentParser(description = "Setup the DB",
+            add_help=False)
+    subparsers = parser.add_subparsers()
+    drop_parser = subparsers.add_parser('drop', help='drop the dataset')
+    populate_parser = subparsers.add_parser('populate',
+            help = 'populate dataset')
+    print_parser = subparsers.add_parser('print', help = 'print all datasets')
+    create_parser = subparsers.add_parser('create', help = 'create dataset')
+    print_metadata_parser = subparsers.add_parser('print-metadata',help =
+        "print metadata for a dataset")
+    print_parser.set_defaults(action="print")
+    populate_parser.set_defaults(action="populate")
+    create_parser.set_defaults(action="create")
+    print_metadata_parser.set_defaults(action="print-metadata")
+
+    populate_parser.add_argument('-dir', type = str ,
+            required=True,
+            help =  "root directory for the"
             " data", default=None)
 
-    parser.add_argument('-dataset-name', type = str, help = "Dataset Name",
+    populate_parser.add_argument('-dataset-name',
+            required=True,
+            type = str, help = "Dataset Name",
             default = None)
 
-    parser.add_argument('-lat', type = float, help = "latitude ", default=None)
+    drop_parser.add_argument('-dataset-name',
+            required=True,
+            type = str, help = "Dataset Name",
+            default = None)
 
-    parser.add_argument('-lon', type = float, help = "longitude", default=None)
+    print_metadata_parser.add_argument('-dataset-name',
+            required=True,
+            type = str, help = "Dataset Name",
+            default = None)
 
-    parser.add_argument('-alt', type = float, help = "longitude", default=None)
+    create_parser.add_argument('-lat', type = float,
+            required=True,
+            help = "latitude ", default=None)
 
-    parser.add_argument('-instrument-tz', type = str, help = "timezone ID for"
+    create_parser.add_argument('-lon', type = float,
+            required=True,
+            help = "longitude", default=None)
+
+    create_parser.add_argument('-alt', type = float,
+            required=True,
+            help = "altitude (m)", default=None)
+
+    create_parser.add_argument('-instrument-tz',
+            required=True,
+            type = str, help = "timezone ID for"
             "measurement system (e.g. America/Denver). "
             "Note: Do not use names such as EDT, MDT etc.", default = None)
 
-    parser.add_argument('action', type = str,
-            help = "drop | populate | print-datasets | create-dataset", default = None)
+    create_parser.add_argument('-gain', type = float,
+            required=True,
+            help = "net of front end gain, cable loss, splitter loss",
+            default = None)
 
+    create_parser.add_argument('-fmin', type = float,
+            required=True,
+            help = "Min frequency (MHz)",
+            default = None)
+
+    create_parser.add_argument('-fmax', type = float,
+            required=True,
+            help = "Max frequency (MHz)",
+            default = None)
+
+    create_parser.add_argument('-antenna', type = str,
+            required=True,
+            help = "Antenna type (string)",
+            default = None)
+
+    create_parser.add_argument('-flo-mhz', type = float,
+            required=True,
+            help = "local oscillator frequency in MHz",
+            default = None)
+
+    create_parser.add_argument("-reflevel-dbm", type = float,
+            required=True,
+            help = "reference level of VST (dBm)",
+            default = None)
+
+    create_parser.add_argument("-sample-rate", type=float,
+            required=True,
+            help = "sampling frequency in MHz",
+            default = None)
+
+    create_parser.add_argument("-fft-size", type = int,
+            required=True,
+            help = "fft size",
+            default = None)
 
     args = parser.parse_args()
-    root_dir = args.dir
-    dataset_name = args.dataset_name
     action = args.action
-    if (action != "populate" and action  != "print" and action !=
-            "print-metadata" and action != "create-dataset" and action !=
-            "print-datasets") :
-        print ("Action must be populate or print or "
-                " drop or print-dataset or create-dataset")
-        sys.exit()
 
 
     if action == "populate":
-        if dataset_name is None:
-            print "Please specify dataset name"
-            sys.exit()
-        if root_dir is None:
-            print "Please specify dir where data can be found name"
-            sys.exit()
+        root_dir = args.dir
+        dataset_name = args.dataset_name
         prefix_list  = set([])
         recursive_walk_metadata(dataset_name,root_dir,prefix_list)
     elif action == "drop":
-        if dataset_name is None:
-            print "Please specify dataset name"
-            sys.exit()
+        dataset_name = args.dataset_name
         purge_dataset(dataset_name)
-    elif action == "create-dataset":
-        if dataset_name is None:
-            print "Please specify dataset name"
-            sys.exit()
-        if (args.lat is None or args.lon is None or args.alt is None
-            or args.instrument_tz is None):
-            print ("specify lat, lon, alt, instrument_tz")
-            sys.exit()
+    elif action == "create":
         lat = float(args.lat)
         lon = float(args.lon)
         alt = float(args.alt)
         instrument_tz = args.instrument_tz
-        create_dataset(dataset_name, lat, lon, alt, instrument_tz)
-    elif action == "print-datasets":
+        gain = float(args.gain)
+        minfreq = float(args.fmin)
+        maxfreq = float(args.fmax)
+        antenna = str(args.antenna)
+        flo_mhz = float(args.flo_mhz)
+        sample_rate = float(args.sample_rate)
+        fft_size = int(args.fft_size)
+        reflevel_dbm = float(args.reflevel_dbm)
+        create_dataset(dataset_name=dataset_name,
+                lat=lat,
+                lon=lon,
+                alt=alt,
+                instrument_tz=instrument_tz,
+                antenna=antenna,
+                gain=gain,
+                reflevel_dbm=reflevel_dbm,
+                flo_mhz=flo_mhz,
+                fmin=fmin,
+                fmax=fmax,
+                sample_rate=sample_rate,
+                fft_size=fft_size)
+    elif action == "print":
         print_datasets()
     elif action == "print-metadata":
-        if dataset_name is None:
-            print "Please specify dataset name"
-            sys.exit()
+        dataset_name = args.dataset_name
         dump_db(dataset_name)
     else:
         print("Invalid action specified")

@@ -183,9 +183,9 @@ def get_dataset(dataset_name):
     return retval
 
 
-def compute_peak_stats_worker(fname,fmin,fmax,flo_mhz,fft_size,sample_rate,gain):
+def compute_peak_stats_worker(fname,fmin,fmax,flo_mhz,fft_size,sample_rate,gaindB):
     # convert amplifier gain to linear units
-    Vgain=pow(10,(gain/20.0))
+    Vgain=pow(10,(gaindB/20.0))
     # VST calibration in dB
     VcaldB=1.64
     Vcal=pow(10,(VcaldB/20.0))
@@ -202,34 +202,57 @@ def compute_peak_stats_worker(fname,fmin,fmax,flo_mhz,fft_size,sample_rate,gain)
     # Power values in dbm
     z_dbm = 20*np.log10(z) - 10*np.log10(100) + 30
     #set fc to frequency of peak power between 3520 MHz and fLO+100 MHz,
-    #excluding the LO. The following will return an index array.
+    #excluding the LO. The following will return an index array of
+    #non-contiguous elements.
     fj = ((fmhz >= 3520) & (fmhz <= flo_mhz+100) & ((fmhz < flo_mhz-1) |
         (fmhz > flo_mhz+1))).nonzero()
     # fmhz_j is the frequencies of interest in our range 
     fmhz_j = fmhz[fj]
     # slice the array to the indices of interest. All rows and a subset of
-    # columns
-    sliced_array = z_dbm[:,fj]
+    # columns in the range of interest.
+    sliced_array = z_dbm[:,fj[0]]
     # compute the 2d index value of the max location. argmax retuns a 1-d
     # result. unravel_index gives the 2d index values.
     fci = np.unravel_index(np.argmax(sliced_array),np.shape(sliced_array))
     # The max power value at the location of interest.
-    pmax_dbm = sliced_array[fci]
-    # The center frequency where the power is max.
-    fc_mhz = fmhz_j[fci[0]]
-    # The frequencies where we want to compute statistics
+    pmax_dbm = np.round(sliced_array[fci],decimals=1)
+    # Find the center frequency where the power is max.
+    fc_mhz = fmhz_j[fci[1]]
+    # The frequencies of interest where we want to compute statistics
     fi = np.arange(fmin,fmax + 10,10)
     # initialize indices. These are indices which fmhz is closest to fi
     # There might be a way to do this without looping in numpy
     k = 0
     m = 0
-    j = []
+    r = []
     while (m < len(fmhz) and k < len(fi)):
         if fmhz[m] >= fi[k]:
             k += 1
-            j.append(m)
+            r.append(m)
         else:
             m += 1
+
+    # r now contains FFT indices that are close to the frequencies of interest.
+    # Adjust the indices to be closest to the frequencies of interest by
+    # looking in the neighborhood. j is the fft freqindices that are closest to the
+    # indices of interest.
+
+    j = []
+    k = 0
+    for m in r:
+         d = abs(fi[k] - fmhz[m])
+         d1 = abs(fi[k] - fmhz[m-1])
+         d2 = abs(fi[k] + fmhz[m+1])
+         min_diff = min(d,d1,d2)
+         if min_diff == d:
+             j.append(m)
+         elif min_diff == d1:
+             j.append(m-1)
+         elif min_diff == d2:
+             j.append(m+1)
+         k = k +1
+
+
     # now compute the power vector for each column
     zisq = np.power(z[:,j],2)
     # Compute the mean for each column
@@ -239,11 +262,16 @@ def compute_peak_stats_worker(fname,fmin,fmax,flo_mhz,fft_size,sample_rate,gain)
     # Compute the 25th. percentile for each column
     zsq_25 = np.percentile(zisq,25,axis=0)
     # Compute the mean value in dbm 
-    pmean_dBm=10*np.log10(zsq_avg)-10*np.log10(100)+30
+    pmean_dBm=np.round(10*np.log10(zsq_avg)-10*np.log10(100)+30,decimals=1)
     # Compute the inter quartile range for each column
-    iqr_dBm=10*np.log10(zsq_75)-10*np.log10(zsq_25)
+    iqr_dBm=np.round(10*np.log10(zsq_75)-10*np.log10(zsq_25),decimals=1)
 
-    print iqr_dBm
+    retval = {}
+    retval["pmax_dbm"] = pmax_dbm
+    retval["fpeak_mhz"] = np.round(fc_mhz,decimals=0)
+    retval["pmean_dbm"] = pmean_dBm
+    retval["iqr_dbm"] = iqr_dBm
+    return retval
 
 
 

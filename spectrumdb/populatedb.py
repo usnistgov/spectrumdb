@@ -221,35 +221,22 @@ def compute_peak_stats_worker(fname,fmin,fmax,flo_mhz,fft_size,sample_rate,gaind
     # The frequencies of interest where we want to compute statistics
     fi = np.arange(fmin,fmax + 10,10)
     # initialize indices. These are indices which fmhz is closest to fi
-    # There might be a way to do this without looping in numpy
-    k = 0
-    m = 0
-    r = []
-    while (m < len(fmhz) and k < len(fi)):
-        if fmhz[m] >= fi[k]:
-            k += 1
-            r.append(m)
-        else:
-            m += 1
+    r = fmhz.searchsorted(fi)
 
     # r now contains FFT indices that are close to the frequencies of interest.
     # Adjust the indices to be closest to the frequencies of interest by
-    # looking in the neighborhood. j is the fft freqindices that are closest to the
-    # indices of interest.
+    # looking in the neighborhood. j is the fft freqindices that are 
+    # closest to the indices of interest.
 
     j = []
     k = 0
     for m in r:
          d = abs(fi[k] - fmhz[m])
          d1 = abs(fi[k] - fmhz[m-1])
-         d2 = abs(fi[k] + fmhz[m+1])
-         min_diff = min(d,d1,d2)
-         if min_diff == d:
+         if d<=d1:
              j.append(m)
-         elif min_diff == d1:
+         else:
              j.append(m-1)
-         elif min_diff == d2:
-             j.append(m+1)
          k = k +1
 
 
@@ -276,15 +263,14 @@ def compute_peak_stats_worker(fname,fmin,fmax,flo_mhz,fft_size,sample_rate,gaind
 
 
 
-def compute_peak_stats(dataset_name,fname) :
-    dataset = get_dataset(dataset_name)
+def compute_peak_stats(dataset,fname) :
     fmin = dataset['fmin']
     fmax = dataset['fmax']
     flo_mhz = dataset["flo_mhz"]
     sample_rate = dataset["sample_rate"]
     fft_size = dataset["fft_size"]
     gain = dataset["gain"]
-    compute_peak_stats_worker(fname,fmin,fmax,flo_mhz,fft_size,sample_rate,gain)
+    return compute_peak_stats_worker(fname,fmin,fmax,flo_mhz,fft_size,sample_rate,gain)
 
 
 
@@ -342,11 +328,17 @@ def recursive_walk_metadata(dataset_name,folder,prefix_list):
                     metadata["universalTimeStamp"] = universalTimestamp
                     if metadataType == "tdms":
                         metadata["tdmsMetadata"] = tdmsMetadata
+                    elif metadataType == "MaxSpectra":
+                        metadata["maxSpectraStats"] = compute_peak_stats(
+                                dataset,pathname)
                     get_metadata(dataset_name).insert(metadata)
                 else:
                     metadata[metadataType] = pathname
                     if metadataType == "tdms":
                         metadata["tdmsMetadata"] = tdmsMetadata
+                    elif metadataType == "MaxSpectra":
+                        metadata["maxSpectraStats"] = compute_peak_stats(
+                                dataset,filename)
                     get_metadata(dataset_name).update({"prefix":prefix},
                             metadata, upsert = False)
 
@@ -361,6 +353,13 @@ def list_datasets():
         result.append(dataset)
     return result
 
+def get_metadata_list(dataset_name):
+    retval = []
+    cur = get_metadata(dataset_name).find()
+    for metadata in cur:
+        del metadata["_id"]
+        retval.append(metadata)
+    return retval
 
 def print_datasets():
     datasets = get_datasets()
@@ -386,6 +385,8 @@ if __name__ == "__main__":
     create_parser = subparsers.add_parser('create', help = 'create dataset')
     print_metadata_parser = subparsers.add_parser('print-metadata',help =
         "print metadata for a dataset")
+
+    drop_parser.set_defaults(action="drop")
     print_parser.set_defaults(action="print")
     populate_parser.set_defaults(action="populate")
     create_parser.set_defaults(action="create")
@@ -395,6 +396,12 @@ if __name__ == "__main__":
             required=True,
             help =  "root directory for the"
             " data", default=None)
+
+
+    create_parser.add_argument('-dataset-name',
+            required=True,
+            type = str, help = "Dataset Name",
+            default = None)
 
     populate_parser.add_argument('-dataset-name',
             required=True,
@@ -482,6 +489,7 @@ if __name__ == "__main__":
         dataset_name = args.dataset_name
         purge_dataset(dataset_name)
     elif action == "create":
+        dataset_name = args.dataset_name
         lat = float(args.lat)
         lon = float(args.lon)
         alt = float(args.alt)
@@ -503,8 +511,8 @@ if __name__ == "__main__":
                 gain=gain,
                 reflevel_dbm=reflevel_dbm,
                 flo_mhz=flo_mhz,
-                fmin=fmin,
-                fmax=fmax,
+                fmin=minfreq,
+                fmax=maxfreq,
                 sample_rate=sample_rate,
                 fft_size=fft_size)
     elif action == "print":

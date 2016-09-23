@@ -10,13 +10,13 @@ import datetime
 import time
 import numpy as np
 import math
+import csv
 from nptdms import TdmsFile
 
 
 
 
 db = pymongo.MongoClient()
-
 
 
 
@@ -254,10 +254,10 @@ def compute_peak_stats_worker(fname,fmin,fmax,flo_mhz,fft_size,sample_rate,gaind
     iqr_dBm=np.round(10*np.log10(zsq_75)-10*np.log10(zsq_25),decimals=1)
 
     retval = {}
-    retval["pmax_dbm"] = pmax_dbm
+    retval["pmax_dbm"] = pmax_dbm.tolist()
     retval["fpeak_mhz"] = np.round(fc_mhz,decimals=0)
-    retval["pmean_dbm"] = pmean_dBm
-    retval["iqr_dbm"] = iqr_dBm
+    retval["pmean_dbm"] = pmean_dBm.tolist()
+    retval["iqr_dbm"] = iqr_dBm.tolist()
     return retval
 
 
@@ -274,7 +274,7 @@ def compute_peak_stats(dataset,fname) :
 
 
 
-def recursive_walk_metadata(dataset_name,folder,prefix_list):
+def recursive_walk_metadata(dataset_name,folder):
     """
     Walk through the subfolders picking up the metadata and populating
     the metadata as a JSON document into mongodb.
@@ -286,7 +286,7 @@ def recursive_walk_metadata(dataset_name,folder,prefix_list):
     for folderName, subfolders, filenames in os.walk(folder):
            if subfolders:
                for subfolder in subfolders:
-                 recursive_walk_metadata(dataset_name,subfolder, prefix_list)
+                 recursive_walk_metadata(dataset_name,subfolder)
 
            for filename in filenames:
                 pathname = os.path.abspath(folderName + "/"  + filename)
@@ -342,7 +342,6 @@ def recursive_walk_metadata(dataset_name,folder,prefix_list):
                     get_metadata(dataset_name).update({"prefix":prefix},
                             metadata, upsert = False)
 
-                prefix_list.add(prefix)
 
 def list_datasets():
     datasets = get_datasets()
@@ -352,6 +351,10 @@ def list_datasets():
         del dataset["_id"]
         result.append(dataset)
     return result
+
+def get_dataset(datasetName):
+    datasets = get_datasets()
+    return datasets.find_one({"name":datasetName})
 
 def get_metadata_list(dataset_name):
     retval = []
@@ -369,10 +372,102 @@ def print_datasets():
         print json.dumps(dataset, indent=4)
 
 def dump_db(dataset_name):
+    """
+    Dump the metadata corresponding to the dataset provided in the 
+    argument.
+    """
     cur = get_metadata(dataset_name).find()
     for metadata in cur:
         del metadata["_id"]
         print (json.dumps(metadata,indent = 4))
+
+
+def import_csv_file(dataset_name,csv_file_name):
+    """
+    import the xl  file metadata into the dataset.
+    """
+    metadataRecords = get_metadata(dataset_name)
+    if metadataRecords is None:
+        raise "No metadata found"
+    with open(csv_file_name) as f:
+        f_csv = csv.reader(f)
+        headings = next(f_csv)
+        headings1 = next(f_csv)
+        radar1Indices = []
+        radar3Index =  -1
+        commentsIndex = -1
+        fileNameIndex = -1
+        refLvlIndex = -1
+        i = 0
+        for head in headings1:
+            heading = head.strip()
+            if heading.startswith("Radar 1"):
+                radar1Indices.append(i)
+            elif heading.startswith("Radar 3 present"):
+                radar3Index = i
+            elif heading.startswith("Comments"):
+                commentsIndex = i
+            elif heading.startswith("File name"):
+                fileNameIndex = i
+            elif heading.startswith("Ref Lvl"):
+                refLvlIndex = i
+            i += 1
+        headings2 = next(f_csv)
+
+
+        try :
+            row = next(f_csv)
+            while row is not None:
+                radar1 = []
+                fileName = row[fileNameIndex]
+                recordName = extract_prefix(fileName, ".tdms")
+                metadata = metadataRecords.find_one({"prefix":recordName})
+                if metadata is not None:
+                    del metadata["_id"]
+                    toUpdate = False
+                    for ri in radar1Indices:
+                        fc = ri
+                        peakPowerIndex = ri + 1
+                        fadeDepthIndex = ri + 2
+                        if row[fc] != "" and row[peakPowerIndex] != "" \
+                            and row[fadeDepthIndex] != "":
+
+                            radarRec = {"fc_mhz"  : float(row[fc]) ,
+                                       "peakPowerDbm": float(row[peakPowerIndex]),
+                                       "fadeDepthDb" : float(row[fadeDepthIndex])}
+                            radar1.append(radarRec)
+                    if len(radar1) != 0 :
+                        toUpdate = True
+                        metadata["RADAR1"] = radar1
+
+                    if row[commentsIndex] != "":
+                        toUpdate = True
+                        metadata["Comments"] = row[commentsIndex]
+
+                    if row[radar3Index] != "":
+                        toUpdate = True
+                        metadata["RADAR3"] = row[radar3Index]
+
+                    if row[refLvlIndex] != "":
+                        toUpdate = True
+                        metadata["refLvl"] = float(row[refLvlIndex])
+
+                    if toUpdate :
+                        print "Updating " + str(metadata)
+                        metadataRecords.update({"prefix":recordName},metadata,upsert=False)
+                row = next(f_csv)
+        except StopIteration :
+            pass
+        except:
+            raise
+
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description = "Setup the DB",
@@ -385,12 +480,15 @@ if __name__ == "__main__":
     create_parser = subparsers.add_parser('create', help = 'create dataset')
     print_metadata_parser = subparsers.add_parser('print-metadata',help =
         "print metadata for a dataset")
+    import_parser = subparsers.add_parser('import',help = "import XLS"
+        " annotations" )
 
     drop_parser.set_defaults(action="drop")
     print_parser.set_defaults(action="print")
     populate_parser.set_defaults(action="populate")
     create_parser.set_defaults(action="create")
     print_metadata_parser.set_defaults(action="print-metadata")
+    import_parser.set_defaults(action="import")
 
     populate_parser.add_argument('-dir', type = str ,
             required=True,
@@ -476,6 +574,14 @@ if __name__ == "__main__":
             help = "fft size",
             default = None)
 
+    import_parser.add_argument("-dataset-name",
+            type = str, help = "Dataset Name",
+            default = None)
+
+    import_parser.add_argument("-csv-file-name",
+            type = str, help = "csv file Name exported from excell",
+            default = None)
+
     args = parser.parse_args()
     action = args.action
 
@@ -483,8 +589,7 @@ if __name__ == "__main__":
     if action == "populate":
         root_dir = args.dir
         dataset_name = args.dataset_name
-        prefix_list  = set([])
-        recursive_walk_metadata(dataset_name,root_dir,prefix_list)
+        recursive_walk_metadata(dataset_name,root_dir)
     elif action == "drop":
         dataset_name = args.dataset_name
         purge_dataset(dataset_name)
@@ -520,6 +625,10 @@ if __name__ == "__main__":
     elif action == "print-metadata":
         dataset_name = args.dataset_name
         dump_db(dataset_name)
+    elif action == "import":
+        csv_file_name = args.csv_file_name
+        dataset_name = args.dataset_name
+        import_csv_file(dataset_name,csv_file_name)
     else:
         print("Invalid action specified")
 

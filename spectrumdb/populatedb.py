@@ -425,32 +425,37 @@ def import_csv_file(dataset_name,csv_file_name):
                 if metadata is not None:
                     del metadata["_id"]
                     toUpdate = False
+
                     for ri in radar1Indices:
                         fc = ri
                         peakPowerIndex = ri + 1
                         fadeDepthIndex = ri + 2
                         if row[fc] != "" and row[peakPowerIndex] != "" \
                             and row[fadeDepthIndex] != "":
-
                             radarRec = {"fc_mhz"  : float(row[fc]) ,
                                        "peakPowerDbm": float(row[peakPowerIndex]),
                                        "fadeDepthDb" : float(row[fadeDepthIndex])}
                             radar1.append(radarRec)
+
                     if len(radar1) != 0 :
                         toUpdate = True
                         metadata["RADAR1"] = radar1
 
-                    if row[commentsIndex] != "":
+                    if commentsIndex > -1 and row[commentsIndex] != "":
                         toUpdate = True
                         metadata["Comments"] = row[commentsIndex]
 
-                    if row[radar3Index] != "":
+                    if radar3Index > -1 and row[radar3Index] != "":
                         toUpdate = True
                         metadata["RADAR3"] = row[radar3Index]
 
-                    if row[refLvlIndex] != "":
+                    if refLvlIndex > -1 and row[refLvlIndex] != "":
                         toUpdate = True
                         metadata["refLvl"] = float(row[refLvlIndex])
+
+                    if len(radar1) != 0 and radar3Index == -1:
+                        print "WARNING : RADAR3 entry not found - skipping entry"
+                        toUpdate = False
 
                     if toUpdate :
                         print "Updating " + str(metadata)

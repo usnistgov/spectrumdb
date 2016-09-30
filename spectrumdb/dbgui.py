@@ -7,6 +7,11 @@ import json
 import populatedb
 import traceback
 import numpy as np
+import matplotlib as mpl
+from matplotlib.backends.backend_qt4agg \
+        import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+import ShowMaxSpectraStats
 
 activeColor = QColor(200,200,0)
 currentDataset = None
@@ -39,7 +44,7 @@ def showTdmsMetadata(tdmsMetadata):
     layout.addWidget(ok,row,0)
     dialog.exec_()
 
-def  showMaxSpectraStats(dataset, metadata):
+def  showMaxSpectraStats(dataset, metadata,maxSpectraFile):
         print "showMaxSpectraStats - todo put charts here "
         fmin = dataset["fmin"]
         fmax = dataset["fmax"]
@@ -49,6 +54,10 @@ def  showMaxSpectraStats(dataset, metadata):
         print "freqs ", freqs
         print "pmean_dbm", metadata["pmean_dbm"]
         print  "iqr_dbm", metadata["iqr_dbm"]
+        global plotWindow
+        plotWindow = ShowMaxSpectraStats.ShowMaxSpectraStats(dataset,
+                metadata,maxSpectraFile)
+        plotWindow.show()
 
 
 def showRadar1(metadata):
@@ -110,7 +119,8 @@ def drawMetadataList(metadataList):
                 showTdmsMetadata(metadata)
         elif keyName == "maxSpectraStats":
             maxSpectraStats = metadataList[row]["maxSpectraStats"]
-            showMaxSpectraStats(dataset, maxSpectraStats)
+            maxSpectraFile = metadataList[row]["MaxSpectra"]
+            showMaxSpectraStats(dataset, maxSpectraStats,maxSpectraFile)
         elif keyName == "RADAR1":
             if "RADAR1" in metadataList[row]:
                 showRadar1(metadataList[row])
@@ -130,10 +140,6 @@ def drawDatasets() :
     global currentDataset
 
     datasets = populatedb.list_datasets()
-    if len(datasets) == 0:
-        print "No data found"
-        sys.exit()
-    cols = len(datasets[0])
     columnNames = ["name","lat","lon","alt","measurementTz","instrumentTz",
             "fmin","fmax","flo_mhz","fft_size",
             "sample_rate","antenna","gain","reflevel_dbm"]
@@ -156,7 +162,11 @@ def drawDatasets() :
             col = col + 1
         row = row + 1
 
-    currentDataset = populatedb.list_datasets()[0]
+    datasets = populatedb.list_datasets()
+    if len(datasets) > 0:
+        currentDataset = populatedb.list_datasets()[0]
+    else:
+        currentDataset = "UNKNOWN"
 
     def handleItemClicked(item) :
         global currentDataset

@@ -8,11 +8,11 @@ class QueryTest(unittest.TestCase):
         pass
 
     def testQuery(self):
-        res = query.find_radar1("SanDiego1",3540)
+        res = query.find_radar1("SanDiego",3540)
         self.assertTrue(res is not None and len(res) == 0)
-        res = query.find_radar1("SanDiego1",3570)
+        res = query.find_radar1("SanDiego",3570)
         self.assertTrue(res is not None and len(res) == 1)
-        res = query.find_radar1("SanDiego1",3540,radar3="Y")
+        res = query.find_radar1("SanDiego",3540,radar3="Y")
         self.assertTrue(res is not None and len(res) == 1)
 
 

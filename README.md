@@ -23,7 +23,9 @@ any directory on the filesystem.
 - numpy (pip install numpy)
 - pytz (pip install pytz
 - npTDMS (NOTE: get this from the fork https://github.com/usnistgov/npTDMS )
-- pyqt4 use the installer from here http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt4-4.11.4-gpl-Py2.7-Qt4.8.7-x32.exe  (get the 64 bit version if you are on a 64 bit python installation)
+- pyqt4 use the installer from here 
+    http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt4-4.11.4-gpl-Py2.7-Qt4.8.7-x64.exe  
+- Matlab engine connector for python. 
 
 ## Google Timzone API
 

@@ -254,6 +254,7 @@ def compute_peak_stats_worker(fname,fmin,fmax,flo_mhz,fft_size,sample_rate,gaind
     iqr_dBm=np.round(10*np.log10(zsq_75)-10*np.log10(zsq_25),decimals=1)
 
     retval = {}
+    retval["filename"] = fname
     retval["pmax_dbm"] = pmax_dbm.tolist()
     retval["fpeak_mhz"] = np.round(fc_mhz,decimals=0)
     retval["pmean_dbm"] = pmean_dBm.tolist()
@@ -323,9 +324,9 @@ def recursive_walk_metadata(dataset_name,folder):
                     metadata["measurementTimeStamp"] = localTimestamp
                     lat = dataset["lat"]
                     lon = dataset["lon"]
-                    universalTimestamp = timezone.getUniversalTimeAtLocation(
-                            localTimestamp,lat,lon)
-                    metadata["universalTimeStamp"] = universalTimestamp
+                    #universalTimestamp = timezone.getUniversalTimeAtLocation(
+                    #        localTimestamp,lat,lon)
+                    #metadata["universalTimeStamp"] = universalTimestamp
                     if metadataType == "tdms":
                         metadata["tdmsMetadata"] = tdmsMetadata
                     elif metadataType == "MaxSpectra":
@@ -347,9 +348,12 @@ def list_datasets():
     datasets = get_datasets()
     cur = datasets.find()
     result = []
-    for dataset in cur:
-        del dataset["_id"]
-        result.append(dataset)
+    if cur is None or cur.count() == 0:
+        return result
+    else:
+        for dataset in cur:
+            del dataset["_id"]
+            result.append(dataset)
     return result
 
 def get_dataset(datasetName):

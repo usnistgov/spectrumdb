@@ -7,6 +7,24 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import numpy as np
+import matlab
+import matlab.engine
+import os
+import traceback
+
+global _matlab
+
+if not "_eng" in globals():
+    try:
+        _matlab = matlab.engine.start_matlab()
+        pathname = os.path.dirname(__file__)
+        print "Started matlab engine current dir = ",pathname
+        _matlab.addpath(pathname,nargout=0)
+        _matlab.cd(pathname)
+    except:
+        print "Cannot start matlab engine"
+        _matlab = None
+
 
 class MyMplCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -48,7 +66,7 @@ class MaxSpectraPlot(MyMplCanvas):
 
         p = self.axes.errorbar(self.freqs,self.pmean_dbm, yerr=self.iqr_dbm,
                 color="green", ls="dotted", picker=5)
-        self.axes.set_title("Peak power (dBm) vs. Freq (MHz)")
+        self.axes.set_title("Mean MAX HOLD power (dBm) vs. Freq (MHz)")
         self.fig.canvas.mpl_connect('pick_event',onPick)
         self.axes.set_ylabel("Power (dBm)")
         self.axes.hold(True)
@@ -92,8 +110,12 @@ class SpectrogramPlot(MyMplCanvas):
         self.axes.hold(True)
         cmap = plt.cm.spectral
         self.axes.get_xaxis().set_visible(False)
-        self.axes.set_yticklabels([str(np.round(i/float(self.sample_rate),decimals=2)) for i in range(0,self.rows,10)])
-        self.axes.set_ylabel("Time (us)")
+        #Each FFT corresponds to 100,000 observations
+        maxLabel = str(np.round(float(self.rows)/
+            float(self.sample_rate*1e6)*1024*100000))
+        self.axes.set_yticks([0,self.rows-1])
+        self.axes.set_yticklabels(["0.00",maxLabel])
+        self.axes.set_ylabel("Time (s)")
         cax = self.axes.imshow(self.z_dbm,
                          interpolation='none',
                          origin='lower',
@@ -111,6 +133,8 @@ class ShowMaxSpectraStats(QMainWindow):
     def __init__(self,dataset,metadata,maxSpectraFile):
         QMainWindow.__init__(self)
         self.dataset = dataset
+        self.metadata = metadata
+        self.maxSpectraFile = maxSpectraFile
         fmin = dataset["fmin"]
         fmax = dataset["fmax"]
         self.fpeak_mhz = metadata["fpeak_mhz"]
@@ -118,6 +142,8 @@ class ShowMaxSpectraStats(QMainWindow):
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.setWindowTitle("Metadata for " + dataset["name"])
         self.file_menu = QMenu('&File', self)
+        self.file_menu.addAction('&Matlab', self.showInMatlab,
+                                 Qt.CTRL + Qt.Key_M)
         self.file_menu.addAction('&Quit', self.fileQuit,
                                  Qt.CTRL + Qt.Key_Q)
         self.menuBar().addMenu(self.file_menu)
@@ -133,6 +159,30 @@ class ShowMaxSpectraStats(QMainWindow):
 
         self.main_widget.setFocus()
         self.setCentralWidget(self.main_widget)
+
+    def showInMatlab(self):
+        #function dispSpectrogram(path,filename,fLO,numSpectra,Vgain,Vcal,fc)
+        global _matlab
+        if _matlab is not None:
+            print "Engine not connected"
+            path = os.path.dirname(self.maxSpectraFile)
+            filename = os.path.basename(self.maxSpectraFile)
+            fLO = self.dataset["flo_mhz"]
+            numSpectra = 134
+            gaindB = self.dataset["gain"]
+            # convert amplifier gain to linear units
+            Vgain=pow(10,(gaindB/20.0))
+            # VST calibration in dB
+            VcaldB=1.64
+            Vcal=pow(10,(VcaldB/20.0))
+            fc = self.metadata["fpeak_mhz"]
+            try:
+                print path,filename,fLO,numSpectra,Vgain,Vcal,fc
+                _matlab.dispSpectrogram(path,filename,fLO,numSpectra,Vgain,Vcal,fc,nargout=0)
+            except:
+                print "Error in calling matlab"
+                traceback.print_exc()
+
 
     def fileQuit(self):
         self.close()

@@ -1,11 +1,13 @@
-## SpectrumDb -- a manager for data gathered from spectrum experiments
+SpectrumDb -- a manager for data gathered from spectrum experiments
+===================================================================
 
 
 This project publishes a data manager for RADAR spectrum data readings. It scans through a set of directories, builds metadata based on the files it encounters and puts the metadata
 into a mongodb collection which can later be queried and updated.
 
 
-# Prerequisites
+Prerequisites
+-------------
 
 - Mongodb 3.3 (see mongodb.org), Install the MongoDB service by starting
 mongod.exe with the --install option. To use an alternate dbpath, specify
@@ -15,7 +17,8 @@ any directory on the filesystem.
 
    mongd.exe -install -dbpath c:/mongodb -log c:/Temp/mongolog.txt
 
-## Python dependencies
+Python dependencies
+-------------------
 
 - Python 2.7.12 set your path to python.exe 
 - pymongo 
@@ -27,7 +30,8 @@ any directory on the filesystem.
     http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt4-4.11.4-gpl-Py2.7-Qt4.8.7-x64.exe  
 - Matlab engine connector for python. 
 
-## Google Timzone API
+Google Timzone API
+------------------
 
 This is used for lat/lon to timezone conversion and for local time to universal
 time conversion. This turns out to be a tricky problem because local time is
@@ -42,7 +46,8 @@ gathered data to universal time.
 
 
 
-# Starting
+Starting
+--------
 
 - Start mongod 
 
@@ -58,7 +63,8 @@ it should start when you restart windows.
     python dbgui.py  
   
 
-# Example invocations
+Example invocations
+-------------------
 
 
 The tool provides command line as well as GUI based invocation.
@@ -85,5 +91,8 @@ Delete a collection and all the associated metadata
 
      python populatedb.py drop -dataset-name SanDiego
 
-Please do not put any spaces in the dataset-name parameter (for example please dont use a string like "Virgina Beach". It is used to create a mongodb collection and mongodb does not like spaces in collection names!)
+Please do not put any spaces in the dataset-name parameter 
+(for example please dont use a string like "Virgina Beach". 
+It is used to create a mongodb collection and mongodb does 
+not like spaces in collection names!)
 

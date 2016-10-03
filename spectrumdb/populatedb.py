@@ -393,82 +393,85 @@ def import_csv_file(dataset_name,csv_file_name):
     metadataRecords = get_metadata(dataset_name)
     if metadataRecords is None:
         raise "No metadata found"
-    with open(csv_file_name) as f:
-        f_csv = csv.reader(f)
-        headings = next(f_csv)
-        headings1 = next(f_csv)
-        radar1Indices = []
-        radar3Index =  -1
-        commentsIndex = -1
-        fileNameIndex = -1
-        refLvlIndex = -1
-        i = 0
-        for head in headings1:
-            heading = head.strip()
-            if heading.startswith("Radar 1"):
-                radar1Indices.append(i)
-            elif heading.startswith("Radar 3 present"):
-                radar3Index = i
-            elif heading.startswith("Comments"):
-                commentsIndex = i
-            elif heading.startswith("File name"):
-                fileNameIndex = i
-            elif heading.startswith("Ref Lvl"):
-                refLvlIndex = i
-            i += 1
-        headings2 = next(f_csv)
-
-
-        try :
+    try :
+        with open(csv_file_name) as f:
+            f_csv = csv.reader(f)
+            headings = next(f_csv)
+            headings1 = next(f_csv)
+            radar1Indices = []
+            radar3Index =  -1
+            commentsIndex = -1
+            fileNameIndex = -1
+            refLvlIndex = -1
+            i = 0
+            for head in headings1:
+                heading = head.strip()
+                if heading.startswith("Radar 1"):
+                    radar1Indices.append(i)
+                elif heading.startswith("Radar 3 present"):
+                    radar3Index = i
+                elif heading.startswith("Comments"):
+                    commentsIndex = i
+                elif heading.startswith("File name"):
+                    fileNameIndex = i
+                elif heading.startswith("Ref Lvl"):
+                    refLvlIndex = i
+                i += 1
+            headings2 = next(f_csv)
             row = next(f_csv)
+            if fileNameIndex == -1  or refLvlIndex == -1 or commentsIndex == -1:
+                raise "Invalid File Format"
+
             while row is not None:
-                radar1 = []
-                fileName = row[fileNameIndex]
-                recordName = extract_prefix(fileName, ".tdms")
-                metadata = metadataRecords.find_one({"prefix":recordName})
-                if metadata is not None:
-                    del metadata["_id"]
-                    toUpdate = False
-
-                    for ri in radar1Indices:
-                        fc = ri
-                        peakPowerIndex = ri + 1
-                        fadeDepthIndex = ri + 2
-                        if row[fc] != "" and row[peakPowerIndex] != "" \
-                            and row[fadeDepthIndex] != "":
-                            radarRec = {"fc_mhz"  : float(row[fc]) ,
-                                       "peakPowerDbm": float(row[peakPowerIndex]),
-                                       "fadeDepthDb" : float(row[fadeDepthIndex])}
-                            radar1.append(radarRec)
-
-                    if len(radar1) != 0 :
-                        toUpdate = True
-                        metadata["RADAR1"] = radar1
-
-                    if commentsIndex > -1 and row[commentsIndex] != "":
-                        toUpdate = True
-                        metadata["Comments"] = row[commentsIndex]
-
-                    if radar3Index > -1 and row[radar3Index] != "":
-                        toUpdate = True
-                        metadata["RADAR3"] = row[radar3Index]
-
-                    if refLvlIndex > -1 and row[refLvlIndex] != "":
-                        toUpdate = True
-                        metadata["refLvl"] = float(row[refLvlIndex])
-
-                    if len(radar1) != 0 and radar3Index == -1:
-                        print "WARNING : RADAR3 entry not found - skipping entry"
+                try:
+                    radar1 = []
+                    fileName = row[fileNameIndex]
+                    recordName = extract_prefix(fileName, ".tdms")
+                    metadata = metadataRecords.find_one({"prefix":recordName})
+                    if metadata is not None:
+                        del metadata["_id"]
                         toUpdate = False
 
-                    if toUpdate :
-                        print "Updating " + str(metadata)
-                        metadataRecords.update({"prefix":recordName},metadata,upsert=False)
-                row = next(f_csv)
-        except StopIteration :
-            pass
-        except:
-            raise
+                        for ri in radar1Indices:
+                            fc = ri
+                            peakPowerIndex = ri + 1
+                            fadeDepthIndex = ri + 2
+                            if row[fc] != "" and row[peakPowerIndex] != "" \
+                                and row[fadeDepthIndex] != "":
+                                radarRec = {"fc_mhz"  : float(row[fc]) ,
+                                        "peakPowerDbm": float(row[peakPowerIndex]),
+                                        "fadeDepthDb" : float(row[fadeDepthIndex])}
+                                radar1.append(radarRec)
+
+                        if len(radar1) != 0 :
+                            toUpdate = True
+                            metadata["RADAR1"] = radar1
+
+                        if commentsIndex > -1 and row[commentsIndex] != "":
+                            toUpdate = True
+                            metadata["Comments"] = row[commentsIndex]
+
+                        if radar3Index > -1 and row[radar3Index] != "":
+                            toUpdate = True
+                            metadata["RADAR3"] = row[radar3Index]
+
+                        if refLvlIndex > -1 and row[refLvlIndex] != "":
+                            toUpdate = True
+                            metadata["refLvl"] = float(row[refLvlIndex])
+
+                        if len(radar1) != 0 and radar3Index == -1:
+                            print "WARNING : RADAR3 entry not found - skipping entry"
+                            toUpdate = False
+
+                        if toUpdate :
+                            print "Updating " + str(metadata)
+                            metadataRecords.update({"prefix":recordName},metadata,upsert=False)
+                    row = next(f_csv)
+                except StopIteration :
+                    row = None
+                    pass
+    except:
+        raise
 
 
 

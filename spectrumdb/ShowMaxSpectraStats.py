@@ -178,7 +178,7 @@ class ShowMaxSpectraStats(QMainWindow):
             fc = self.metadata["fpeak_mhz"]
             try:
                 print path,filename,fLO,numSpectra,Vgain,Vcal,fc
-                _matlab.dispSpectrogram(path,filename,fLO,numSpectra,Vgain,Vcal,fc,nargout=0)
+                _matlab.dispSpectrogram(path,filename,fLO,numSpectra,Vgain,Vcal,fc,nargout=0,async=True)
             except:
                 print "Error in calling matlab"
                 traceback.print_exc()

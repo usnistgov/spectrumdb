@@ -94,6 +94,7 @@ def find_radar1(datasetName, fc_mhz, radar3="N", minSnr = 6):
                 if "refLvl" in metadata :
                     refLvl = metadata["refLvl"]
                 else:
+                    # The default ref level
                     refLvl = 5
                 snr = compute_snr(peakPower,refLvl)
                 if snr > minSnr:

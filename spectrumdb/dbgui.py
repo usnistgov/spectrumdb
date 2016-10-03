@@ -76,8 +76,8 @@ def drawMetadataList(metadataList):
     global currentDataset
     dataset = currentDataset
     columnNames = ["prefix", "measurementDate","instrumentDate",
-            "PeakAmplitude", "tdms",
-            "tdmsMetadata", "maxSpectraStats","refLvl","RADAR1","RADAR3","Comment"]
+            "PeakAmplitude", "tdms", "tdmsMetadata",
+            "maxSpectraStats","refLvl","RADAR1","RADAR3","Comments"]
     tableWidget = QTableWidget(len(metadataList),len(columnNames), mainWindow)
     headerNames = QStringList()
     for hdrName in columnNames:
@@ -259,10 +259,10 @@ def createDataset():
     gainWidget = QLineEdit()
     layout.addWidget(gainWidget,row,1)
 
-    row += 1
-    layout.addWidget(QLabel("ref_level_dbm :"),row,0)
-    reflevelWidget = QLineEdit()
-    layout.addWidget(reflevelWidget,row,1)
+    #row += 1
+    #layout.addWidget(QLabel("ref_level_dbm :"),row,0)
+    #reflevelWidget = QLineEdit()
+    #layout.addWidget(reflevelWidget,row,1)
 
 
 
@@ -302,10 +302,10 @@ def createDataset():
                 fft_size=fft_size)
             drawDatasets()
         except:
-            traceback.print_exc()
+            var = traceback.format_exc()
             msgBox = QErrorMessage()
             msgBox.setModal(1)
-            msgBox.showMessage(QString("error creating data set"))
+            msgBox.showMessage(QString("error creating data set " + var))
             msgBox.exec_()
 
 
@@ -347,10 +347,10 @@ def deleteDatasetDialog():
             populatedb.purge_dataset(name)
             drawDatasets()
         except:
-            traceback.print_exc()
+            var = traceback.format_exc()
             msgBox = QErrorMessage()
             msgBox.setModal(1)
-            msgBox.showMessage(QString("error purging data set"))
+            msgBox.showMessage(QString("error purging data set " + var))
             msgBox.exec_()
 
     ok = QPushButton('Delete', dialog)
@@ -388,10 +388,10 @@ def configureDialog():
             apiKey = str(apiKeyWidget.text())
             # TODO -- write out configuration to config file.
         except:
-            traceback.print_exc()
+            var = traceback.format_exc()
             msgBox = QErrorMessage()
             msgBox.setModal(1)
-            msgBox.showMessage(QString("error purging data set"))
+            msgBox.showMessage(QString("error purging data set " + var))
             msgBox.exec_()
 
     ok = QPushButton('Delete', dialog)
@@ -443,11 +443,10 @@ def populateDialog():
             populatedb.recursive_walk_metadata(str(nameWidget.text()),
                     str(dirNameWidget.text()))
         except Exception as detail:
-            traceback.print_exc()
+            var = traceback.format_exc()
             msgBox = QErrorMessage()
             msgBox.setModal(1)
-            msgBox.showMessage(QString("error populating data set : " +
-                str(detail)))
+            msgBox.showMessage(QString("error populating data set : " + var))
             msgBox.exec_()
 
     row += 1
@@ -499,26 +498,14 @@ def importDialog():
             fileName = str(csvFileWidget.text())
             populatedb.import_csv_file(datasetName,fileName)
         except Exception as detail:
-            traceback.print_exc()
+            var = traceback.format_exc()
             msgBox = QErrorMessage()
             msgBox.setModal(1)
-            msgBox.showMessage(QString("error populating data set : " +
-                str(detail)))
+            msgBox.showMessage(QString("error populating data set : " + var))
             msgBox.exec_()
 
 
     pushButton.clicked.connect(getCsvFile)
-    row +=1
-    ok = QPushButton("Import",dialog)
-    ok.setDefault(True)
-    ok.clicked.connect(importCsvFile)
-    ok.clicked.connect(dialog.close)
-    layout.addWidget(ok,row,0)
-    cancel = QPushButton('Cancel',dialog)
-    cancel.clicked.connect(dialog.reject)
-    cancel.setDefault(True)
-    layout.addWidget(cancel,row,1)
-    dialog.exec_()
 
     def import_csv():
         try:
@@ -526,11 +513,10 @@ def importDialog():
             fileName = str(csvFileWidget.text())
             populatedb.import_csv_file(datasetName,fileName)
         except Exception as detail:
-            traceback.print_exc()
+            var = traceback.format_exc()
             msgBox = QErrorMessage()
             msgBox.setModal(1)
-            msgBox.showMessage(QString("error importing from csv file : " +
-                str(detail)))
+            msgBox.showMessage(QString("error importing from csv file : " + var))
             msgBox.exec_()
 
     row += 1

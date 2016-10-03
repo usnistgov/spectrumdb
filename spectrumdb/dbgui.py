@@ -127,8 +127,9 @@ def drawMetadataList(metadataList):
 
     screenSize = QDesktopWidget().availableGeometry()
     tableWidget.itemClicked.connect(handleItemClicked)
-    mainWindow.setFixedSize(getTableWidth(tableWidget),
-            screenSize.height() * 0.7)
+    #mainWindow.setFixedSize(getTableWidth(tableWidget),
+    #        screenSize.height() * 0.7)
+    mainWindow.setWindowState(PyQt4.QtCore.Qt.WindowMaximized)
     mainWindow.setCentralWidget(tableWidget)
 
 
@@ -142,7 +143,7 @@ def drawDatasets() :
     datasets = populatedb.list_datasets()
     columnNames = ["name","lat","lon","alt","measurementTz","instrumentTz",
             "fmin","fmax","flo_mhz","fft_size",
-            "sample_rate","antenna","gain","reflevel_dbm"]
+            "sample_rate","antenna","gain"]
 
     tableWidget = QTableWidget(len(datasets),len(columnNames), mainWindow)
     headerNames = QStringList()
@@ -181,10 +182,7 @@ def drawDatasets() :
     tableWidget.itemClicked.connect(handleItemClicked)
 
     screenSize = QDesktopWidget().availableGeometry()
-    mainWindow.setFixedSize(getTableWidth(tableWidget),
-            screenSize.height() * 0.7)
-    width = mainWindow.frameGeometry().width()
-    tableWidget.setFixedWidth(width)
+    mainWindow.setWindowState(PyQt4.QtCore.Qt.WindowMaximized)
     mainWindow.setCentralWidget(tableWidget)
 
 def createDataset():

@@ -1,4 +1,6 @@
 import pymongo
+import timezone
+import time
 
 #The main query I have been thinking of is:
 #
@@ -70,21 +72,56 @@ def compute_snr(peak_power,ref_level = 5) :
     peakPowerDbmPerHz = get_peak_power_in_dbm_per_hz(peak_power)
     return peak_power - noiseFloor
 
-def find_radar1(datasetName, fc_mhz, radar3="N", minSnr = 6):
+def find_radar1(datasetName=None, fc_mhz=3550, radar3=None, minSnr = 6, startDate=None,
+        endDate = None):
     """
-    Return a list of TDMS files satisfying the following predicate
-    (Files which contain Radar-1 at 3550 MHz) & (Files with do not contain Radar-3)
-    & (Files with SNR above 6dB)
+    Return a list of TDMS files having radar1 identified and satisfying the given constraints.
 
+    Parameters:
+        - datasetName : The name of the dataset
+        - fc=the center frequency in mhz (default value = 3550)
+        - radar3 (Y/N) whether or not to look for radar 3 (default is "N")
+        - minSnr the minimum SNR value (default is 6)
+        - startDate : The start date.'%Y-%m-%d %H:%M:%S' format
+        - endDate : The end date '%Y-%m-%d %H:%M:%S' format
+
+    Return:
+        A list of TDMS files matching the query criteria.
 
     """
+    dataset = populatedb.get_dataset(datasetName)
+    if dataset is None:
+        raise "Dataset not found"
     metadataCollection = populatedb.get_metadata(datasetName)
     if metadataCollection is None:
         return None
-    cur = metadataCollection.find({"$and":
-        [{"RADAR1":{"$exists":True}},{"RADAR3":radar3}]})
+
+    measurementTimeZone = dataset["measurementTz"]
+
+    if startDate is not None and endDate is None or\
+        startDate is None and endDate is not None:
+        raise "Malformed query start/end date"
+    if startDate is not None:
+        #'%Y-%m-%d %H:%M:%S' format
+        startTimeStamp = time.mktime(time.strptime(startDate, '%Y-%m-%d %H:%M:%S'))
+        endTimeStamp   = time.mktime(time.strptime(endDate, '%Y-%m-%d %H:%M:%S'))
+        if radar3 is not None:
+            query = {"$and": [{"RADAR1":{"$exists":True}},{"RADAR3":radar3},
+                        {"measurementTimeStamp": {"$gte":startTimeStamp} },
+                        {"measurementTimeStamp": {"$lte":endTimeStamp}} ]}
+        else:
+            query = {"$and": [{"RADAR1":{"$exists":True}},
+                        {"measurementTimeStamp": {"$gte":startTimeStamp} },
+                        {"measurementTimeStamp": {"$lte":endTimeStamp}} ]}
+    else:
+        if radar3 is not None:
+            query = {"$and": [{"RADAR1":{"$exists":True}},{"RADAR3":radar3}] }
+        else:
+            query = {"RADAR1":{"$exists":True}}
+
+    cur = metadataCollection.find( query )
     if cur is None or cur.count() == 0:
-        return None
+        return []
     retval = []
     for metadata in cur:
         radarRecs = metadata["RADAR1"]

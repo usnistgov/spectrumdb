@@ -529,7 +529,7 @@ def importDialog():
     layout.addWidget(cancel,row,1)
     dialog.exec_()
 
-if __name__ == "__main__":
+def main():
     global mainWindow
     app = QApplication(sys.argv)
     mainWindow = QMainWindow()
@@ -591,3 +591,6 @@ if __name__ == "__main__":
 
     mainWindow.show()
     sys.exit(app.exec_())
+
+if __name__ == "__main__":
+    main()

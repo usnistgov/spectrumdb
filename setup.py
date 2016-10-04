@@ -35,6 +35,8 @@ setup(
   ],
   install_requires = ['numpy', 'pymongo','matplotlib','npTDMS'],
   entry_points = """
+  [console_scripts]
+  dbgui=spectrumdb.dbgui:main
   """,
   scripts=["bin/dbgui"]
 )

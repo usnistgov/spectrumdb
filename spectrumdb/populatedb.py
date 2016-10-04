@@ -481,7 +481,7 @@ def import_csv_file(dataset_name,csv_file_name):
 
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description = "Setup the DB",
             add_help=False)
     subparsers = parser.add_subparsers()
@@ -645,3 +645,5 @@ if __name__ == "__main__":
         print("Invalid action specified")
 
 
+if __name__ == "__main__":
+    main()

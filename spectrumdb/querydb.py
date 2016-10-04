@@ -1,6 +1,7 @@
 import pymongo
 import timezone
 import time
+import argparse
 
 #The main query I have been thinking of is:
 #
@@ -72,8 +73,8 @@ def compute_snr(peak_power,ref_level = 5) :
     peakPowerDbmPerHz = get_peak_power_in_dbm_per_hz(peak_power)
     return peak_power - noiseFloor
 
-def find_radar1(datasetName=None, fc_mhz=3550, radar3=None, minSnr = 6, startDate=None,
-        endDate = None):
+def find_radar1(datasetName=None, fc_mhz=3550, radar3=None,
+        minSnr = 6, startDate=None, endDate = None):
     """
     Return a list of TDMS files having radar1 identified and satisfying the given constraints.
 
@@ -139,4 +140,35 @@ def find_radar1(datasetName=None, fc_mhz=3550, radar3=None, minSnr = 6, startDat
     return retval
 
 
+
+def main():
+    parser = argparse.ArgumentParser(description = "query the DB",
+            add_help=False)
+    parser.add_argument("-dataset-name",type=str, default=None,required=True,
+            help="Dataset Name")
+    parser.add_argument("-fc-mhz",type=int, default=3550,required=False,
+            help="Center frequency where you expect to find Radar")
+    parser.add_argument("-radar3",type=str, default="N",required=False,
+            help="Y/N specifies if radar3 is present")
+    parser.add_argument("-min-snr",type=float, default=6,required=False,
+            help="Min SNR")
+    parser.add_argument("-start-date",type=str, default=None,required=False,
+            help="start date in '%Y-%m-%d %H:%M:%S' format")
+    parser.add_argument("-end-date",type=str, default=None,required=False,
+            help="End date in '%Y-%m-%d %H:%M:%S' format")
+
+    args = parser.parse_args()
+
+    dataset_name = args.dataset_name
+    fc = args.fc_mhz
+    radar3 = args.radar3
+    min_snr = args.min_snr
+    start_date = args.start_date
+    end_date = args.end_date
+    print find_radar1(datasetName=dataset_name, fc_mhz=fc, radar3=radar3,
+            startDate=start_date,endDate=end_date)
+
+
+if __name__ == "__main__":
+    main()
 

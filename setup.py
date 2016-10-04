@@ -33,9 +33,14 @@ setup(
     'Intended Audience :: NIST CTL',
     'Natural Language :: English',
   ],
-  install_requires = ['numpy', 'pymongo','matplotlib','npTDMS'],
+  install_requires = ['numpy','pymongo','matplotlib','npTDMS==0.8.123'],
+  dependency_links = [
+      "git://github.com/usnistgov/npTDMS.git#egg=npTDMS-0.8.123"
+  ],
   entry_points = """
   [console_scripts]
   dbgui=spectrumdb.dbgui:main
+  populatedb=spectrumdb.populatedb:main
+  querydb=spectrumdb.querydb:main
   """
 )

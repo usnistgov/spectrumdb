@@ -14,7 +14,7 @@ def read_version():
 
 setup(
   name = 'spectrumdb',
-  version = "1.0",
+  version = read_version(),
   description = ("Spectrum datafile management"
     " for radar spectrum measurement experiments."),
   author = 'M. Ranganathan',
@@ -33,7 +33,8 @@ setup(
     'Intended Audience :: NIST CTL',
     'Natural Language :: English',
   ],
-  install_requires = ['numpy', 'pymongo','matplotlib','npTdms'],
+  install_requires = ['numpy', 'pymongo','matplotlib','npTDMS'],
   entry_points = """
-  """
+  """,
+  scripts=["bin/dbgui"]
 )

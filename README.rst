@@ -6,8 +6,8 @@ This project publishes a data manager for RADAR spectrum data readings. It scans
 into a mongodb collection which can later be queried and updated.
 
 
-Pre-requisites
----------------
+Prerequisites
+--------------
 
 - Mongodb 3.3 (see mongodb.org), Install the MongoDB service by starting
 mongod.exe with the --install option. To use an alternate dbpath, specify
@@ -65,26 +65,29 @@ Start mongod
     mongod -dbpath = c:\mongodb
 
 Note: if you installed mongod as a service (see above), 
-it should start when you restart windows.
+it should start when you restart windows. If it does not auto-start,
+then start it from the command line.
 
-Graphical user interface
--------------------------
+Starting the Graphical user interface
+-------------------------------------
 
 Start the db gui application
 
     dbgui
 
 You have to define a dataset first and then populate it with data.
-The UI interactions are fairly obvious. We will not belabor the point by
+The UI interactions are fairly obvious. We will not bore you by
 giving tiresome instructions.
   
 
 Command line invocations
 --------------------------
 
-The tool provides command line as well as GUI based interfaces.
+The tool provides command line as well as GUI based interfaces. 
 The main command line interface is called populatedb.
 You can look at the options using python populatedb  -help etc.
+All the functionality of the command line interface is also available
+via the GUI.
 
 Here are some command line examples. Set up a dataset (the numbers below are just for illustrative purposes):
 

@@ -21,6 +21,8 @@ setup(
   author_email = 'mranga@nist.gov',
   url = 'https://github.com/usnistgov/spectrumdb',
   packages = ['spectrumdb', 'spectrumdb.test'],
+  package_dir={'spectrumdb':'spectrumdb'},
+  package_data={'spectrumdb':['dispSpectrogram.m']},
   long_description=open('README.rst').read(),
   license = 'Public Domain',
   classifiers = [
@@ -39,7 +41,7 @@ setup(
   ],
   entry_points = """
   [console_scripts]
-  dbgui=spectrumdb.dbgui:main
+  spectrumdb=spectrumdb.dbgui:main
   populatedb=spectrumdb.populatedb:main
   querydb=spectrumdb.querydb:main
   """

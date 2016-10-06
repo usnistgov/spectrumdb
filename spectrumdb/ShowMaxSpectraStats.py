@@ -180,8 +180,11 @@ class ShowMaxSpectraStats(QMainWindow):
                 print path,filename,fLO,numSpectra,Vgain,Vcal,fc
                 _matlab.dispSpectrogram(path,filename,fLO,numSpectra,Vgain,Vcal,fc,nargout=0,async=True)
             except:
-                print "Error in calling matlab"
-                traceback.print_exc()
+                var = traceback.format_exc()
+                msgBox = QErrorMessage()
+                msgBox.setModal(1)
+                msgBox.showMessage(QString("Connecting to MATLAB  " + var))
+                msgBox.exec_()
 
 
     def fileQuit(self):

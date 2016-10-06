@@ -14,6 +14,7 @@ from datetime import timedelta
 timeZoneMap = {}
 
 SECONDS_PER_DAY = 24 * 60 * 60
+GOOGLE_TIMEZONE_API_KEY = None
 
 """
 Time conversion routines to go from local to univesal time and vice versa.
@@ -92,7 +93,18 @@ def getApiKey():
     Get the google timezone API key. This should be setup
     in your environment as an environment variable.
     """
-    return os.environ.get("GOOGLE_TIMEZONE_API_KEY")
+    global GOOGLE_TIMEZONE_API_KEY
+    if GOOGLE_TIMEZONE_API_KEY != None:
+        return GOOGLE_TIMEZONE_API_KEY
+    pathname = os.environ.get("HOME") + "/.sdbconfig"
+    if os.path.exists(pathname ):
+        with open(pathname) as config:
+            jsonData = json.load(config)
+            GOOGLE_TIMEZONE_API_KEY = jsonData["GOOGLE_TIMEZONE_API_KEY"]
+            return GOOGLE_TIMEZONE_API_KEY
+    else:
+        return os.environ.get("GOOGLE_TIMEZONE_API_KEY")
+
 
 
 def formatTimeStampLong(timeStamp, timeZoneName):

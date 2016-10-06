@@ -12,6 +12,7 @@ from matplotlib.backends.backend_qt4agg \
         import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import ShowMaxSpectraStats
+import os
 
 activeColor = QColor(200,200,0)
 currentDataset = None
@@ -376,14 +377,30 @@ def configureDialog():
     dialog.setModal(0)
     row = 0
     layout.addWidget(QLabel("API Key :"),row,0)
+    pathname = os.environ.get("HOME") + "/.sdbconfig"
     apiKeyWidget = QLineEdit()
-    apiKeyWidget.setText(QString("TODO: Get this from google"))
+    if os.path.exists(pathname):
+        with open(pathname) as config:
+            jsonData = json.load(config)
+            if "GOOGLE_TIMEZONE_API_KEY" in jsonData:
+                apiKey = jsonData["GOOGLE_TIMEZONE_API_KEY"]
+                apiKeyWidget.setText(QString(apiKey))
+            else:
+                apiKeyWidget.setText(QString("Get API Key for TimeZone API from google"))
+    else:
+        apiKeyWidget.setText(QString("Get API Key for TimeZone API from google"))
     layout.addWidget(apiKeyWidget,row,1)
     row += 1
 
     def configure():
         try:
             apiKey = str(apiKeyWidget.text())
+            toWrite = {}
+            toWrite['GOOGLE_TIMEZONE_API_KEY'] = apiKey
+            with open(pathname,"w") as outfile:
+                print "Saving to ", pathname
+                jsonData = json.loads(json.dumps(toWrite))
+                json.dump(jsonData,outfile)
             # TODO -- write out configuration to config file.
         except:
             var = traceback.format_exc()
@@ -392,7 +409,7 @@ def configureDialog():
             msgBox.showMessage(QString("error purging data set " + var))
             msgBox.exec_()
 
-    ok = QPushButton('Delete', dialog)
+    ok = QPushButton('Save', dialog)
     ok.setDefault(True)
     ok.clicked.connect(configure)
     ok.clicked.connect(dialog.close)

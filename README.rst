@@ -19,23 +19,32 @@ any directory on the filesystem.
 
 Python dependencies
 -------------------
+First install Python 2.7.12 set your path to python.exe. 
 
-You can install most of the following dependencies from a github git shell.
-Run python setup.py install
+Get pip. First download the  following:
 
-- Python 2.7.12 set your path to python.exe 
+   https://bootstrap.pypa.io/get-pip.py
+
+Then do the following
+
+   python get-pip.py
+
+
+You can install most of the following dependencies from a github git shell
+using the following command:
+
+    python setup.py install 
+
 - pymongo 
 - numpy (pip install numpy)
 - pytz (pip install pytz
 - npTDMS (Get this from the fork https://github.com/usnistgov/npTDMS )
-- pyqt4 use the installer from here 
+- pyqt4 use the installer from here (does not install from setup.py):
     http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt4-4.11.4-gpl-Py2.7-Qt4.8.7-x64.exe  
-- Matlab engine connector for python. Follow the instructions here.
+- Matlab engine connector for python. Follow the instructions here:
   https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html
 
 After installing dependencies
-
-    python setup.py install 
 
 
 
@@ -48,10 +57,8 @@ often set by legislation (for example whether or not Daylight Savings Time is in
 use). You can get an API key by getting a google account and using the
 developer console (google around a bit to figure out how). 
 
-- Get a google timezone API key and set up the followng environment
-variable. GOOGLE\_TIMZONE\_API\_KEY in your windows environment. This
-is required to  determine the timezone for the LAT/LON where you gathered
-data.
+- Get a google timezone API key It is required to  determine the timezone for 
+  the LAT/LON where you gathered data.
 
 
 
@@ -71,11 +78,12 @@ then start it from the command line.
 Starting the Graphical user interface
 -------------------------------------
 
-Start the db gui application
+Start the db gui application. From a shell type
 
-    dbgui
+    spectrumdb
 
-You have to define a dataset first and then populate it with data.
+You have to define configure the system first by providing the google API key.
+Then define a dataset and then populate it with data.
 The UI interactions are fairly obvious. We will not bore you by
 giving tiresome instructions.
   
@@ -171,7 +179,14 @@ TBD
 Disclaimers
 -----------
 
-This software was developed by employees of the National Institute of Standards and Technology (NIST). This software has been contributed to the public domain. Pursuant to title 15 Untied States Code Section 105, works of NIST employees are not subject to copyright protection in the United States and are considered to be in the public domain. As a result, a formal license is not needed to use this software.
+This software was developed by employees of the National Institute of Standards and Technology (NIST). 
+This software has been contributed to the public domain. Pursuant to title 15 Untied States Code Section 105, 
+works of NIST employees are not subject to copyright protection in the United States and are considered to be 
+in the public domain. As a result, a formal license is not needed to use this software.
 
-This software is provided "AS IS." NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT AND DATA ACCURACY. NIST does not warrant or make any representations regarding the use of the software or the results thereof, including but not limited to the correctness, accuracy, reliability or usefulness of this software.
+This software is provided "AS IS." NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED OR STATUTORY, 
+INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, 
+NON-INFRINGEMENT AND DATA ACCURACY. NIST does not warrant or make any representations regarding the use 
+of the software or the results thereof, including but not limited to the correctness, accuracy, reliability 
+or usefulness of this software.
 

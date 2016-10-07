@@ -73,8 +73,8 @@ def compute_snr(peak_power,ref_level = 5) :
     peakPowerDbmPerHz = get_peak_power_in_dbm_per_hz(peak_power)
     return peak_power - noiseFloor
 
-def find_radar1(datasetName=None, fc_mhz=3550, radar3=None,
-        minSnr = 6, startDate=None, endDate = None):
+def find_radar1(datasetName=None, fc_mhz=3550, radar3='U',
+        minSnr = 6, startDate='U', endDate = 'U'):
     """
     Return a list of TDMS files having radar1 identified and satisfying the given constraints.
 
@@ -92,21 +92,24 @@ def find_radar1(datasetName=None, fc_mhz=3550, radar3=None,
     """
     dataset = populatedb.get_dataset(datasetName)
     if dataset is None:
-        raise "Dataset not found"
+        raise Exception("Dataset not found")
     metadataCollection = populatedb.get_metadata(datasetName)
     if metadataCollection is None:
-        return None
+        return []
 
     measurementTimeZone = dataset["measurementTz"]
 
-    if startDate is not None and endDate is None or\
-        startDate is None and endDate is not None:
-        raise "Malformed query start/end date"
-    if startDate is not None:
+    if startDate != "U" and endDate == "U" or\
+        startDate == "U" and endDate != "U":
+        raise Exception("Malformed query start/end date")
+    if startDate != 'U':
         #'%Y-%m-%d %H:%M:%S' format
+        #print "startDate [", startDate, "]"
         startTimeStamp = time.mktime(time.strptime(startDate, '%Y-%m-%d %H:%M:%S'))
         endTimeStamp   = time.mktime(time.strptime(endDate, '%Y-%m-%d %H:%M:%S'))
-        if radar3 is not None:
+        if startTimeStamp > endTimeStamp:
+            raise Exception("Start timestamp exceeds end timestamp")
+        if radar3 != 'U':
             query = {"$and": [{"RADAR1":{"$exists":True}},{"RADAR3":radar3},
                         {"measurementTimeStamp": {"$gte":startTimeStamp} },
                         {"measurementTimeStamp": {"$lte":endTimeStamp}} ]}
@@ -115,7 +118,7 @@ def find_radar1(datasetName=None, fc_mhz=3550, radar3=None,
                         {"measurementTimeStamp": {"$gte":startTimeStamp} },
                         {"measurementTimeStamp": {"$lte":endTimeStamp}} ]}
     else:
-        if radar3 is not None:
+        if radar3 != 'U':
             query = {"$and": [{"RADAR1":{"$exists":True}},{"RADAR3":radar3}] }
         else:
             query = {"RADAR1":{"$exists":True}}

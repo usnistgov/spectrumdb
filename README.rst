@@ -129,8 +129,7 @@ Query API
 There is just one query interface defined in the module querydb with the 
 following method signature:
 
-   find_radar1(datasetName=None, fc_mhz=3550, radar3=None,
-        minSnr = 6, startDate=None, endDate = None)
+    find_radar1(datasetName=None, fc_mhz=3550, radar3='U', minSnr = 6, startDate='U', endDate = 'U')
 
 
     Parameters:

@@ -135,11 +135,14 @@ following method signature:
 
     Parameters:
         - datasetName : The name of the dataset
-        - fc=the center frequency in mhz (default value = 3550)
-        - radar3 (Y/N) whether or not to look for radar 3 (default is "N")
+        - fc_mhz=the center frequency in mhz (default value = 3550)
+        - radar3 (Y/N) whether or not to look for radar 3 
+          (default is "U" - undefined)
         - minSnr the minimum SNR value (default is 6)
         - startDate : The start date.'%Y-%m-%d %H:%M:%S' format
+          (default is "U" - undefined)
         - endDate : The end date '%Y-%m-%d %H:%M:%S' format
+          (default is "U" - undefined)
 
     Return:
         A list of TDMS files matching the query criteria.
@@ -170,23 +173,43 @@ returns the following list:
 Matlab interface
 ----------------
 
-TBD
+The MATLAB interface is actually a wrapper around the Python Query API.
+To use the MATLAB interface, set the spectrumdb/spectrumdb directory as 
+your current directory in MATLAB or include it in your MATLAB path.
+If you ran python setup.py install, the MATLAB files will be in the install
+location e.g. 
 
-    
+    C:\Python27\Lib\site-packages\spectrumdb-0.1.0-py2.7.egg\spectrumdb
+
+Add this directory to your MATLAB path.
+
+    >> addpath('C:/Python27/Lib/site-packages/spectrumdb-0.1.0-py2.7.egg/spectrumdb/')
+    >> find_radar1('SanDiego','fc_mhz',3570,'radar3','N')
+
+    ans = 
+
+    'E:\TDMS_Files\VST11Apr16_093038.tdms'
+
+Use help find_radar1 for documentation
 
 
 
 Disclaimers
 -----------
 
-This software was developed by employees of the National Institute of Standards and Technology (NIST). 
-This software has been contributed to the public domain. Pursuant to title 15 Untied States Code Section 105, 
-works of NIST employees are not subject to copyright protection in the United States and are considered to be 
-in the public domain. As a result, a formal license is not needed to use this software.
+This software was developed by employees of the National Institute of Standards and Technology (NIST), an agency of the Federal Government. Pursuant to title 17 United States Code Section 105, works of NIST employees are not subject to copyright protection in the United States and are considered to be in the public domain. Permission to freely use, copy, modify, and distribute this software and its documentation without fee is hereby granted, provided that this notice and disclaimer of warranty appears in all copies.
 
-This software is provided "AS IS." NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED OR STATUTORY, 
-INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, 
-NON-INFRINGEMENT AND DATA ACCURACY. NIST does not warrant or make any representations regarding the use 
-of the software or the results thereof, including but not limited to the correctness, accuracy, reliability 
-or usefulness of this software.
+THE SOFTWARE IS PROVIDED 'AS IS' WITHOUT ANY WARRANTY OF ANY KIND, EITHER EXPRESSED, IMPLIED, OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, ANY WARRANTY THAT THE SOFTWARE WILL CONFORM TO SPECIFICATIONS, ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND FREEDOM FROM INFRINGEMENT, AND ANY WARRANTY THAT THE DOCUMENTATION WILL CONFORM TO THE SOFTWARE, OR ANY WARRANTY THAT THE SOFTWARE WILL BE ERROR FREE. IN NO EVENT SHALL NASA BE LIABLE FOR ANY DAMAGES, INCLUDING, BUT NOT LIMITED TO, DIRECT, INDIRECT, SPECIAL OR CONSEQUENTIAL DAMAGES, ARISING OUT OF, RESULTING FROM, OR IN ANY WAY CONNECTED WITH THIS SOFTWARE, WHETHER OR NOT BASED UPON WARRANTY, CONTRACT, TORT, OR OTHERWISE, WHETHER OR NOT INJURY WAS SUSTAINED BY PERSONS OR PROPERTY OR OTHERWISE, AND WHETHER OR NOT LOSS WAS SUSTAINED FROM, OR AROSE OUT OF THE RESULTS OF, OR USE OF, THE SOFTWARE OR SERVICES PROVIDED HEREUNDER.
+
+Distributions of NIST software should also include copyright and licensing statements of any third-party software that are legally bundled with the code in compliance with the conditions of those licenses.
+
+Copyrights for bundled Scripts
+-------------------------------
+See licenses directory
+
+
+
+
+This software includes code that was downloaded from MATLAB central. The
+following applies to 
 

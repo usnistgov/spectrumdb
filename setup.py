@@ -22,7 +22,7 @@ setup(
   url = 'https://github.com/usnistgov/spectrumdb',
   packages = ['spectrumdb', 'spectrumdb.test'],
   package_dir={'spectrumdb':'spectrumdb'},
-  package_data={'spectrumdb':['dispSpectrogram.m']},
+  package_data={'spectrumdb':['dispSpectrogram.m','find_radar1.m','parse_pv_pairs.m']},
   long_description=open('README.rst').read(),
   license = 'Public Domain',
   classifiers = [

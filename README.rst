@@ -85,8 +85,16 @@ Note: if you installed mongod as a service (see above),
 it should start when you restart windows. If it does not auto-start,
 then start it from the command line.
 
-Optionally: Start the Graphical user interface
-++++++++++++++++++++++++++++++++++++++++++++++
+Populating the DB
+------------------
+
+There are two methods to populate the DB and browse the data.
+
+  - Via the GUI
+  - Via the command line interface
+
+Graphical user interface
++++++++++++++++++++++++++
 
 Start the db gui application. From a shell type
 
@@ -138,8 +146,11 @@ Please do not put any spaces in the dataset-name parameter
 It is used to create a mongodb collection and mongodb does 
 not like spaces in collection names!)
 
-Query API
----------
+Querying the DB
+---------------
+
+Python Query API
+++++++++++++++++
 
 There is just one query interface defined in the module querydb with the 
 following method signature:
@@ -163,8 +174,8 @@ following method signature:
 
 You can include module querydb in your code to access the API above.
 
-Query DB Command Line Utility
------------------------------
+Query Command Line Utility
++++++++++++++++++++++++++++
 
 There is also a command line utility that you can use to query the database. 
 For example:
@@ -187,8 +198,8 @@ returns the following list:
 
     [u'E:\\TDMS_Files\\VST10Apr16_224711.tdms']
 
-Matlab interface
-----------------
+Matlab API interface
+++++++++++++++++++++
 
 The MATLAB interface is actually a wrapper around the Python Query API.
 To use the MATLAB interface, set the spectrumdb/spectrumdb directory as 
@@ -207,7 +218,7 @@ Add this directory to your MATLAB path and run your query.
 
      'E:\TDMS_Files\VST11Apr16_093038.tdms'
 
-Use the following for documentation:
+Use the following for documentation under MATLAB:
 
      >> help find_radar1 
 
@@ -216,6 +227,9 @@ Use the following for documentation:
 Disclaimers
 -----------
 
+NIST Disclaimer
++++++++++++++++
+
 This software was developed by employees of the National Institute of Standards and Technology (NIST), an agency of the Federal Government. Pursuant to title 17 United States Code Section 105, works of NIST employees are not subject to copyright protection in the United States and are considered to be in the public domain. Permission to freely use, copy, modify, and distribute this software and its documentation without fee is hereby granted, provided that this notice and disclaimer of warranty appears in all copies.
 
 THE SOFTWARE IS PROVIDED 'AS IS' WITHOUT ANY WARRANTY OF ANY KIND, EITHER EXPRESSED, IMPLIED, OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, ANY WARRANTY THAT THE SOFTWARE WILL CONFORM TO SPECIFICATIONS, ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND FREEDOM FROM INFRINGEMENT, AND ANY WARRANTY THAT THE DOCUMENTATION WILL CONFORM TO THE SOFTWARE, OR ANY WARRANTY THAT THE SOFTWARE WILL BE ERROR FREE. IN NO EVENT SHALL NASA BE LIABLE FOR ANY DAMAGES, INCLUDING, BUT NOT LIMITED TO, DIRECT, INDIRECT, SPECIAL OR CONSEQUENTIAL DAMAGES, ARISING OUT OF, RESULTING FROM, OR IN ANY WAY CONNECTED WITH THIS SOFTWARE, WHETHER OR NOT BASED UPON WARRANTY, CONTRACT, TORT, OR OTHERWISE, WHETHER OR NOT INJURY WAS SUSTAINED BY PERSONS OR PROPERTY OR OTHERWISE, AND WHETHER OR NOT LOSS WAS SUSTAINED FROM, OR AROSE OUT OF THE RESULTS OF, OR USE OF, THE SOFTWARE OR SERVICES PROVIDED HEREUNDER.
@@ -223,6 +237,6 @@ THE SOFTWARE IS PROVIDED 'AS IS' WITHOUT ANY WARRANTY OF ANY KIND, EITHER EXPRES
 Distributions of NIST software should also include copyright and licensing statements of any third-party software that are legally bundled with the code in compliance with the conditions of those licenses.
 
 Copyrights for bundled Scripts
--------------------------------
+++++++++++++++++++++++++++++++
 This software includes code that was downloaded from MATLAB central. 
 See licenses directory for redistribution license details.

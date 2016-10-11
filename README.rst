@@ -37,15 +37,17 @@ Then do the following
    python get-pip.py
 
 
-You can install most of the following dependencies from a github git shell
+You can install most of the following dependencies from a github git shell  ( see https://desktop.github.com/ )
 using the following command:
 
     python setup.py install 
+    
+OR you can install each of the following manually using pip :
 
-- pymongo 
+- pymongo (pip install pymongo)
 - numpy (pip install numpy)
 - pytz (pip install pytz
-- npTDMS (Get this from the fork https://github.com/usnistgov/npTDMS )
+- npTDMS (*NOTE* Get this from the fork https://github.com/usnistgov/npTDMS )
 
 Additionally, you will need to manually install the following:
 
@@ -222,6 +224,7 @@ location e.g.
 Add this directory to your MATLAB path and run your query.
 
      >> addpath('C:/Python27/Lib/site-packages/spectrumdb-0.1.0-py2.7.egg/spectrumdb/')
+     
      >> find_radar1('SanDiego','fc_mhz',3570,'radar3','N')
 
      ans = 

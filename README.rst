@@ -18,7 +18,7 @@ Prerequisites
 
 - Mongodb 3.3 (see mongodb.org), Install the MongoDB service by starting
 mongod.exe with the --install option. To use an alternate dbpath, specify
-the path in the configuration file (e.g. C:\mongodb\mongod.cfg) or on
+the path in the configuration file (e.g., C:/mongodb/mongod.cfg) or on
 the command line with the --dbpath option. You can put the database in
 any directory on the filesystem.
 

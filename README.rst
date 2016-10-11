@@ -27,7 +27,7 @@ any directory on the filesystem.
    mongd.exe -install -dbpath c:/mongodb -log c:/Temp/mongolog.txt
 
 Python dependencies
--------------------
+++++++++++++++++++++
 First install Python 2.7.12 set your path to python.exe. 
 
 Get pip. First download the  following:
@@ -48,17 +48,19 @@ using the following command:
 - numpy (pip install numpy)
 - pytz (pip install pytz
 - npTDMS (Get this from the fork https://github.com/usnistgov/npTDMS )
+
+Additionally, you will need to manually install the following:
+
 - pyqt4 use the installer from here (does not install from setup.py):
     http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt4-4.11.4-gpl-Py2.7-Qt4.8.7-x64.exe  
 - Matlab engine connector for python. Follow the instructions here:
   https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html
 
-After installing dependencies
 
 
 
 Google Timzone API
-------------------
++++++++++++++++++++
 
 This is used for lat/lon to timezone conversion and for local time to universal
 time conversion. This turns out to be a tricky problem because local time is
@@ -88,10 +90,13 @@ then start it from the command line.
 Populating the DB
 ------------------
 
+First, configure the system using the GUI. Provide the google timezone API key
+for this.
+
 There are two methods to populate the DB and browse the data.
 
-  - Via the GUI
-  - Via the command line interface
+- Via the GUI
+- Via the command line interface
 
 Graphical user interface
 +++++++++++++++++++++++++
@@ -109,7 +114,6 @@ You can use the command line interface to do all interactions as outlined
 below:
 
   
-
 
 Command line interface
 +++++++++++++++++++++++
@@ -148,6 +152,13 @@ not like spaces in collection names!)
 
 Querying the DB
 ---------------
+
+There are three ways of querying the DB:
+
+- Via the PYTHON query API
+- Via the querydb command line utility
+- Via the MATLAB query API
+
 
 Python Query API
 ++++++++++++++++
@@ -188,7 +199,8 @@ returns a list of TDMS files that matched based on searching the metadata:
 
 
 To specify date ranges, use the start-date and end-date as follows:
-    querydb.exe -dataset-name=SanDiego -fc-mhz=3540 -radar3=Y \
+
+     querydb.exe -dataset-name=SanDiego -fc-mhz=3540 -radar3=Y \
         -start-date="2016-04-10 00:00:00" -end-date="2016-04-11 00:00:00"
 
 Note the format for the start and end date must be YYYY-mm-dd HH:MM:SS 
@@ -238,5 +250,6 @@ Distributions of NIST software should also include copyright and licensing state
 
 Copyrights for bundled Scripts
 ++++++++++++++++++++++++++++++
+
 This software includes code that was downloaded from MATLAB central. 
 See licenses directory for redistribution license details.

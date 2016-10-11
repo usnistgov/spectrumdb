@@ -75,17 +75,18 @@ Starting
 Start mongod 
 +++++++++++++
 
-    # Create a mongod folder where you want the db to reside\
+    # Create a mongodb folder where you want the metadata db to reside (for example c:\\mongodb):
     
-    md c:\mongodb
+    md c:\\mongodb
     
     # Start mongod
     
-    mongod -dbpath = c:\mongodb
+    mongod -dbpath = c:\\mongodb
 
 Note: if you installed mongod as a service (see above), 
 it should start when you restart windows. If it does not auto-start,
 then start it from the command line.
+Note: This is only metadata so it will not take up a lot of room on your file system.
 
 Populating the DB
 ------------------

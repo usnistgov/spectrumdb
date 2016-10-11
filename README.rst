@@ -2,8 +2,17 @@ SpectrumDb -- a manager for data gathered from spectrum experiments
 ===================================================================
 
 
-This project publishes a data manager for RADAR spectrum data readings. It scans through a set of directories, builds metadata based on the files it encounters and puts the metadata
-into a mongodb collection which can later be queried and updated.
+This project publishes a data manager for RADAR spectrum data readings collected in TDMS format 
+from the NI Vector Signal Generator. Such RADAR data is gathered in various
+costal locations and metadata is extracted from it. The gathered data +
+metadata is presented to the spectrumdb tool. SpectrumBg scans through a set of directories, 
+builds additional metadata based on the files it encounters and puts 
+the result into a mongodb collection which can later be queried and updated.
+
+The tool supports a GUI and ingest interface that allows users to register
+directories where the radar data is present and a query interface 
+that allows users to query for radar captures meeting the query specification.
+
 
 
 Prerequisites
@@ -66,6 +75,7 @@ Starting
 --------
 
 Start mongod 
++++++++++++++
 
     # Create a mongod folder where you want the db to reside
     md c:\mongodb
@@ -75,8 +85,8 @@ Note: if you installed mongod as a service (see above),
 it should start when you restart windows. If it does not auto-start,
 then start it from the command line.
 
-Starting the Graphical user interface
--------------------------------------
+Optionally: Start the Graphical user interface
+++++++++++++++++++++++++++++++++++++++++++++++
 
 Start the db gui application. From a shell type
 
@@ -86,10 +96,15 @@ You have to define configure the system first by providing the google API key.
 Then define a dataset and then populate it with data.
 The UI interactions are fairly obvious. We will not bore you by
 giving tiresome instructions.
+You do not need to start the GUI if you do not want to browse the data.
+You can use the command line interface to do all interactions as outlined
+below:
+
   
 
-Command line invocations
---------------------------
+
+Command line interface
++++++++++++++++++++++++
 
 The tool provides command line as well as GUI based interfaces. 
 The main command line interface is called populatedb.
@@ -165,6 +180,9 @@ To specify date ranges, use the start-date and end-date as follows:
     querydb.exe -dataset-name=SanDiego -fc-mhz=3540 -radar3=Y \
         -start-date="2016-04-10 00:00:00" -end-date="2016-04-11 00:00:00"
 
+Note the format for the start and end date must be YYYY-mm-dd HH:MM:SS 
+If you specify start date you must specify end date and vice vresa.
+
 returns the following list:
 
     [u'E:\\TDMS_Files\\VST10Apr16_224711.tdms']
@@ -178,18 +196,20 @@ your current directory in MATLAB or include it in your MATLAB path.
 If you ran python setup.py install, the MATLAB files will be in the install
 location e.g. 
 
-    C:\Python27\Lib\site-packages\spectrumdb-0.1.0-py2.7.egg\spectrumdb
+     C:\Python27\Lib\site-packages\spectrumdb-0.1.0-py2.7.egg\spectrumdb
 
-Add this directory to your MATLAB path.
+Add this directory to your MATLAB path and run your query.
 
-    >> addpath('C:/Python27/Lib/site-packages/spectrumdb-0.1.0-py2.7.egg/spectrumdb/')
-    >> find_radar1('SanDiego','fc_mhz',3570,'radar3','N')
+     >> addpath('C:/Python27/Lib/site-packages/spectrumdb-0.1.0-py2.7.egg/spectrumdb/')
+     >> find_radar1('SanDiego','fc_mhz',3570,'radar3','N')
 
-    ans = 
+     ans = 
 
-    'E:\TDMS_Files\VST11Apr16_093038.tdms'
+     'E:\TDMS_Files\VST11Apr16_093038.tdms'
 
-Use help find_radar1 for documentation
+Use the following for documentation:
+
+     >> help find_radar1 
 
 
 
@@ -204,11 +224,5 @@ Distributions of NIST software should also include copyright and licensing state
 
 Copyrights for bundled Scripts
 -------------------------------
-See licenses directory
-
-
-
-
-This software includes code that was downloaded from MATLAB central. The
-following applies to 
-
+This software includes code that was downloaded from MATLAB central. 
+See licenses directory for redistribution license details.

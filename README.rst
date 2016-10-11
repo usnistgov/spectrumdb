@@ -18,7 +18,7 @@ Prerequisites
 
 - Mongodb 3.3 (see mongodb.org), Install the MongoDB service by starting
 mongod.exe with the --install option. To use an alternate dbpath, specify
-the path in the configuration file (e.g. C:\mongodb\mongod.cfg) or on
+the path in the configuration file (e.g., C:/mongodb/mongod.cfg) or on
 the command line with the --dbpath option. You can put the database in
 any directory on the filesystem.
 
@@ -26,26 +26,26 @@ any directory on the filesystem.
 
 Python dependencies
 ++++++++++++++++++++
-First install Python 2.7.12 set your path to python.exe. 
+First install Python 2.7.12 set your path to python.exe. Checkout the spectrumdb distribution from github. 
 
-Get pip. First download the  following:
-
-   https://bootstrap.pypa.io/get-pip.py
-
-Then do the following
+Get pip. 
 
    python get-pip.py
 
 
-You can install most of the following dependencies from a github git shell
+You can install most of the following dependencies from a github git shell  ( see https://desktop.github.com/ )
 using the following command:
 
     python setup.py install 
+    
+OR you can install each of the following manually using pip (if you don't want to install the github desktop) :
 
-- pymongo 
+- pymongo (pip install pymongo)
 - numpy (pip install numpy)
 - pytz (pip install pytz
-- npTDMS (Get this from the fork https://github.com/usnistgov/npTDMS )
+- npTDMS (*NOTE* Get this from the fork https://github.com/usnistgov/npTDMS )
+
+And then type python setup.py install 
 
 Additionally, you will need to manually install the following:
 
@@ -74,16 +74,36 @@ developer console (google around a bit to figure out how).
 Starting
 --------
 
+Starting the system involves two steps:
+
+- Start the mongodb database and optionally
+- Start the GUI 
+
 Start mongod 
 +++++++++++++
 
-    # Create a mongod folder where you want the db to reside
-    md c:\mongodb
-    mongod -dbpath = c:\mongodb
+    # Create a mongodb folder where you want the metadata db to reside (for example c:\\mongodb):
+    
+    md c:\\mongodb
+    
+    # Start mongod
+    
+    mongod -dbpath = c:\\mongodb
 
 Note: if you installed mongod as a service (see above), 
 it should start when you restart windows. If it does not auto-start,
 then start it from the command line.
+Note: This is only metadata so it will not take up a lot of room on your file system.
+
+Graphical user interface
++++++++++++++++++++++++++
+
+Start the db gui application. From a shell type
+
+    spectrumdb
+
+You have to configure the system first by providing the google API key.
+Then define a dataset and then populate it with data.
 
 Populating the DB
 ------------------
@@ -96,15 +116,9 @@ There are two methods to populate the DB and browse the data.
 - Via the GUI
 - Via the command line interface
 
-Graphical user interface
-+++++++++++++++++++++++++
 
-Start the db gui application. From a shell type
-
-    spectrumdb
-
-You have to define configure the system first by providing the google API key.
-Then define a dataset and then populate it with data.
+Via the GUI
++++++++++++++
 The UI interactions are fairly obvious. We will not bore you by
 giving tiresome instructions.
 You do not need to start the GUI if you do not want to browse the data.
@@ -117,8 +131,8 @@ Command line interface
 +++++++++++++++++++++++
 
 The tool provides command line as well as GUI based interfaces. 
-The main command line interface is called populatedb.
-You can look at the options using python populatedb  -help etc.
+The command line interface for populating the DB is called populatedb.
+You can look at the options using populatedb  -help etc.
 All the functionality of the command line interface is also available
 via the GUI.
 
@@ -192,7 +206,8 @@ You can include module querydb in your code to access the API above.
 Query Command Line Utility
 +++++++++++++++++++++++++++
 
-There is also a command line utility that you can use to query the database. 
+querydb is a  command line utility that you can use to query the database. 
+
 For example:
 
     querydb.exe -dataset-name=SanDiego -fc-mhz=3570 -radar3=N
@@ -228,6 +243,7 @@ location e.g.
 Add this directory to your MATLAB path and run your query.
 
      >> addpath('C:/Python27/Lib/site-packages/spectrumdb-0.1.0-py2.7.egg/spectrumdb/')
+     
      >> find_radar1('SanDiego','fc_mhz',3570,'radar3','N')
 
      ans = 

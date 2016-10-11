@@ -26,13 +26,9 @@ any directory on the filesystem.
 
 Python dependencies
 ++++++++++++++++++++
-First install Python 2.7.12 set your path to python.exe. 
+First install Python 2.7.12 set your path to python.exe. Checkout the spectrumdb distribution from github. 
 
-Get pip. First download the  following:
-
-   https://bootstrap.pypa.io/get-pip.py
-
-Then do the following
+Get pip. 
 
    python get-pip.py
 
@@ -79,8 +75,12 @@ Starting
 Start mongod 
 +++++++++++++
 
-    # Create a mongod folder where you want the db to reside
+    # Create a mongod folder where you want the db to reside\
+    
     md c:\mongodb
+    
+    # Start mongod
+    
     mongod -dbpath = c:\mongodb
 
 Note: if you installed mongod as a service (see above), 

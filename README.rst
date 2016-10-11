@@ -238,7 +238,7 @@ your current directory in MATLAB or include it in your MATLAB path.
 If you ran python setup.py install, the MATLAB files will be in the install
 location e.g. 
 
-     C:\Python27\Lib\site-packages\spectrumdb-0.1.0-py2.7.egg\spectrumdb
+     C:\\Python27\\Lib\\site-packages\\spectrumdb-0.1.0-py2.7.egg\\spectrumdb
 
 Add this directory to your MATLAB path and run your query.
 

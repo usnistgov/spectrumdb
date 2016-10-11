@@ -131,8 +131,8 @@ Command line interface
 +++++++++++++++++++++++
 
 The tool provides command line as well as GUI based interfaces. 
-The main command line interface is called populatedb.
-You can look at the options using python populatedb  -help etc.
+The command line interface for populating the DB is called populatedb.
+You can look at the options using populatedb  -help etc.
 All the functionality of the command line interface is also available
 via the GUI.
 
@@ -200,7 +200,8 @@ You can include module querydb in your code to access the API above.
 Query Command Line Utility
 +++++++++++++++++++++++++++
 
-There is also a command line utility that you can use to query the database. 
+querydb is a  command line utility that you can use to query the database. 
+
 For example:
 
     querydb.exe -dataset-name=SanDiego -fc-mhz=3570 -radar3=N

@@ -147,9 +147,9 @@ Set up a dataset (the numbers below are just for illustrative purposes):
      populatedb create -dataset-name SanDiego -lat 32.715 -lon 117.161 -alt 100 -instrument-tz America/Denver -fmin 3500 -fmax 3650 -flo-mhz 3557 -sample-rate 225 -ref-level-dbm 5 -gain 26.4 -fft-size 1024
 
 
-Populate the DB (assuming the data lives in e:\) :
+Populate the DB (assuming the data lives in e:\\) :
 
-     populatedb populate -dir e:\ -dataset-name SanDiego 
+     populatedb populate -dir e:\\ -dataset-name SanDiego 
 
 Print the datasets in the Database:
 

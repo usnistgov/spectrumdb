@@ -4,14 +4,11 @@ SpectrumDb -- a manager for data gathered from spectrum experiments
 
 This project publishes a data manager for RADAR spectrum data readings collected in TDMS format 
 from the NI Vector Signal Generator. Such RADAR data is gathered in various
-costal locations and metadata is extracted from it. The gathered data +
-metadata is presented to the spectrumdb tool. SpectrumBg scans through a set of directories, 
+coastal locations and metadata is extracted from it. The gathered data +
+metadata is presented to the spectrumdb tool which catalogs the data and 
+presents a query interface. Spectrumdb scans through a set of directories, 
 builds additional metadata based on the files it encounters and puts 
 the result into a mongodb collection which can later be queried and updated.
-
-The tool supports a GUI and ingest interface that allows users to register
-directories where the radar data is present and a query interface 
-that allows users to query for radar captures meeting the query specification.
 
 
 

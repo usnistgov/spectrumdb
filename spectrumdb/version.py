@@ -1,4 +1,3 @@
-
 # This software was developed by employees of the National Institute
 # of Standards and Technology (NIST), an agency of the Federal
 # Government. Pursuant to title 17 United States Code Section 105, works
@@ -25,5 +24,6 @@
 # Distributions of NIST software should also include copyright and licensing
 # statements of any third-party software that are legally bundled with
 # the code in compliance with the conditions of those licenses.
+
 __version_info__ = (0, 1, 0)
 __version__ = '.'.join('%d' % d for d in __version_info__)

@@ -38,12 +38,14 @@ using the following command:
 
     python setup.py install 
     
-OR you can install each of the following manually using pip :
+OR you can install each of the following manually using pip (if you don't want to install the github desktop) :
 
 - pymongo (pip install pymongo)
 - numpy (pip install numpy)
 - pytz (pip install pytz
 - npTDMS (*NOTE* Get this from the fork https://github.com/usnistgov/npTDMS )
+
+And then type python setup.py install 
 
 Additionally, you will need to manually install the following:
 
@@ -72,6 +74,11 @@ developer console (google around a bit to figure out how).
 Starting
 --------
 
+Starting the system involves two steps:
+
+- Start the mongodb database and optionally
+- Start the GUI 
+
 Start mongod 
 +++++++++++++
 
@@ -88,6 +95,16 @@ it should start when you restart windows. If it does not auto-start,
 then start it from the command line.
 Note: This is only metadata so it will not take up a lot of room on your file system.
 
+Graphical user interface
++++++++++++++++++++++++++
+
+Start the db gui application. From a shell type
+
+    spectrumdb
+
+You have to configure the system first by providing the google API key.
+Then define a dataset and then populate it with data.
+
 Populating the DB
 ------------------
 
@@ -99,15 +116,9 @@ There are two methods to populate the DB and browse the data.
 - Via the GUI
 - Via the command line interface
 
-Graphical user interface
-+++++++++++++++++++++++++
 
-Start the db gui application. From a shell type
-
-    spectrumdb
-
-You have to define configure the system first by providing the google API key.
-Then define a dataset and then populate it with data.
+Via the GUI
++++++++++++++
 The UI interactions are fairly obvious. We will not bore you by
 giving tiresome instructions.
 You do not need to start the GUI if you do not want to browse the data.

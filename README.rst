@@ -122,12 +122,18 @@ You can look at the options using python populatedb  -help etc.
 All the functionality of the command line interface is also available
 via the GUI.
 
-Here are some command line examples. Set up a dataset (the numbers below are just for illustrative purposes):
+Here are some command line examples. 
+
+Configure the dtatabase with a Google Timzone API key:
+
+    populatedb config -api-key 123456789
+
+Set up a dataset (the numbers below are just for illustrative purposes):
 
      populatedb create -dataset-name SanDiego -lat 32.715 -lon 117.161 -alt 100 -instrument-tz America/Denver -fmin 3500 -fmax 3650 -flo-mhz 3557 -sample-rate 225 -ref-level-dbm 5 -gain 26.4 -fft-size 1024
 
 
-Populate the DB (assuming the data lives in e:\) as follows
+Populate the DB (assuming the data lives in e:\) :
 
      populatedb populate -dir e:\ -dataset-name SanDiego 
 
@@ -139,7 +145,7 @@ Print all the metadata in the Database:
 
      populatedb print-metadata -dataset-name SanDiego
 
-Delete a collection and all the associated metadata
+Delete a collection and all the associated metadata:
 
      populatedb drop -dataset-name SanDiego
 

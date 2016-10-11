@@ -159,6 +159,14 @@ def debug_print_files(folder):
             if os.path.exists(filepath) :
                 print folderName + "/" + filename
 
+def configure(googleApiKey):
+    toWrite = {}
+    pathname = os.environ.get("HOME") + "/.sdbconfig"
+    toWrite['GOOGLE_TIMEZONE_API_KEY'] = googleApiKey
+    with open(pathname,"w") as config:
+         jsonData = json.loads(json.dumps(toWrite))
+         json.dump(jsonData,config)
+
 
 def create_dataset(dataset_name=None,
                 lat=None,
@@ -512,6 +520,7 @@ def main():
     parser = argparse.ArgumentParser(description = "Setup the DB",
             add_help=False)
     subparsers = parser.add_subparsers()
+    config_parser = subparsers.add_parser('config', help='config timzone API KEY')
     drop_parser = subparsers.add_parser('drop', help='drop the dataset')
     populate_parser = subparsers.add_parser('populate',
             help = 'populate dataset')
@@ -522,12 +531,18 @@ def main():
     import_parser = subparsers.add_parser('import',help = "import XLS"
         " annotations" )
 
+    config_parser.set_defaults(action="config")
     drop_parser.set_defaults(action="drop")
     print_parser.set_defaults(action="print")
     populate_parser.set_defaults(action="populate")
     create_parser.set_defaults(action="create")
     print_metadata_parser.set_defaults(action="print-metadata")
     import_parser.set_defaults(action="import")
+
+    config_parser.add_argument('-api-key',
+            required=True,
+            type = str, help = "Google Timezone API Key",
+            default = None)
 
     populate_parser.add_argument('-dir', type = str ,
             required=True,
@@ -544,6 +559,7 @@ def main():
             required=True,
             type = str, help = "Dataset Name",
             default = None)
+
 
     drop_parser.add_argument('-dataset-name',
             required=True,
@@ -624,8 +640,10 @@ def main():
     args = parser.parse_args()
     action = args.action
 
-
-    if action == "populate":
+    if action == "config":
+        api_key = args.api_key
+        configure(api_key)
+    elif action == "populate":
         root_dir = args.dir
         dataset_name = args.dataset_name
         recursive_walk_metadata(dataset_name,root_dir)

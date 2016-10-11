@@ -93,8 +93,21 @@ def showRadar1(metadata):
     print list of radar1 records.
     """
     radar1List = metadata["RADAR1"]
+    dialog = QDialog()
+    dialog.setWindowTitle("RADAR1 info")
+    layout = QGridLayout()
+    dialog.setLayout(layout)
+    row  = 0
     for radar in radar1List:
-        print str(radar)
+        layout.addWidget(QLabel("RADAR1 : "),row,0)
+        val =  str(radar)
+        layout.addWidget(QLabel(str(val)),row,1)
+        row += 1
+    ok = QPushButton('OK', dialog)
+    ok.setDefault(True)
+    ok.clicked.connect(dialog.reject)
+    layout.addWidget(ok,row,0)
+    dialog.exec_()
 
 def drawMetadataList(metadataList):
     """

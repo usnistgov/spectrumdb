@@ -233,6 +233,14 @@ Use the following for documentation under MATLAB:
      >> help find_radar1 
 
 
+Known Issues
+------------
+
+When you click on the "Matlab" dropdown in the GUI, subsequently
+clicking on the spectrogram canvas in matlab disables the data 
+values display. There is an issue with the MATLAB python connector
+that causes this. 
+
 
 Disclaimers
 -----------
@@ -272,3 +280,5 @@ Copyrights for bundled Scripts
 
 This software includes code that was downloaded from MATLAB central. 
 See licenses directory for redistribution license details.
+
+

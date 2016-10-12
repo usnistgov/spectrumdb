@@ -16,7 +16,10 @@ which can later be queried and updated.
 Prerequisites
 --------------
 
-- Mongodb 3.3. Get it from  mongodb.org, Install the MongoDB service on windows 
+Mongodb 3.3 
+++++++++++++
+  
+Get it from  mongodb.org. Install the MongoDB service on windows 
 by starting mongod.exe with the --install option. To use an alternate dbpath, specify
 the path in the configuration file (e.g., C:/mongodb/mongod.cfg) or on
 the command line with the --dbpath option. You can put the database in
@@ -36,14 +39,20 @@ Python dependencies
 1. First install Python 2.7.12 set your path to python.exe. Get it from here:
 
 
-   https://www.python.org/downloads/release/python-2712/
+    https://www.python.org/downloads/release/python-2712/
 
 
-2. Checkout the spectrumdb distribution from github. 
+2. Checkout the spectrumdb distribution from github using *git clone*
+   (preferred method) or via the following URL : 
+
+
+    https://github.com/usnistgov/spectrumdb/archive/master.zip
+
+
 
 3. Get pip using the get-pip.py script that is provided with the project. 
 
-   python get-pip.py
+    python get-pip.py
 
 
 4. Install dependencies.  You can install most of the following dependencies from a 
@@ -53,7 +62,7 @@ Python dependencies
     python setup.py install 
 
     
-**OR (less preferrably)** you can install each of the following manually using pip (if you don't want to install the github desktop) :
+**OR (less preferrable)** you can install each of the following manually using pip (if you don't want to install the github desktop) :
 
 - pymongo ( *pip install pymongo* )
 - numpy ( *pip install numpy* )
@@ -64,7 +73,10 @@ Python dependencies
 And then type *python setup.py install* on the project setup.py after installing
 all the dependencies manually. 
 
-Additionally (in either case), you will need to manually install the following:
+Additional dependencies
+++++++++++++++++++++++++
+
+You will need to manually install the following:
 
 - pyqt4 use the installer from here (does not install from setup.py):
 
@@ -72,7 +84,7 @@ Additionally (in either case), you will need to manually install the following:
 
 - Matlab engine connector for python. Follow the instructions here:
 
-  https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html
+    https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html
 
 
 
@@ -80,14 +92,14 @@ Additionally (in either case), you will need to manually install the following:
 Google Timzone API
 +++++++++++++++++++
 
-This is used for lat/lon to timezone conversion and for local time to universal
+A google timezone API key is required to  determine the timezone for 
+the LAT/LON where you gathered data and for local time to universal
 time conversion. This turns out to be a tricky problem because local time is
 often set by legislation (for example whether or not Daylight Savings Time is in
 use). You can get an API key by getting a google account and using the
-developer console (google around a bit to figure out how). 
+developer console to get an API Key (google around a bit to figure out how). 
+It is free for fewer than a certain threshold number of hits per day. 
 
-- Get a google timezone API key It is required to  determine the timezone for 
-  the LAT/LON where you gathered data.
 
 
 

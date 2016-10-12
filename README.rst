@@ -128,8 +128,8 @@ Then define a dataset and then populate it with data.
 Populating the DB
 ------------------
 
-First, configure the system using the GUI. Provide the google timezone API key
-for this.
+First, configure the system using either the GUI or the command line interface below. 
+Provide the google timezone API key for this.
 
 There are two methods to populate the DB and browse the data.
 
@@ -140,7 +140,8 @@ There are two methods to populate the DB and browse the data.
 Via the GUI
 +++++++++++++
 The GUI interactions are fairly obvious. We will not bore you by
-giving tiresome instructions.
+giving tiresome instructions. You can set up and query the DB 
+using the command line interface or using the GUI.
 You do not need to start the GUI if you do not want to browse the data.
 You can use the command line interface to do all interactions as outlined
 below:
@@ -150,9 +151,8 @@ below:
 Command line interface
 +++++++++++++++++++++++
 
-The tool provides command line as well as GUI based interfaces. 
-The command line interface for populating the DB is called populatedb.
-You can look at the options using populatedb  -help etc.
+The command line interface for configuring and populating the DB is called populatedb.
+You can look at the options using populatedb  -help etc. 
 All the functionality of the command line interface is also available
 via the GUI.
 
@@ -160,7 +160,7 @@ Here are some command line examples.
 
 Configure the dtatabase with a Google Timzone API key:
 
-    populatedb config -api-key 123456789
+     populatedb config -api-key 123456789
 
 Set up a dataset (the numbers below are just for illustrative purposes):
 

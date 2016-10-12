@@ -16,42 +16,62 @@ which can later be queried and updated.
 Prerequisites
 --------------
 
-- Mongodb 3.3 (see mongodb.org), Install the MongoDB service by starting
-mongod.exe with the --install option. To use an alternate dbpath, specify
+- Mongodb 3.3. Get it from  mongodb.org, Install the MongoDB service on windows 
+by starting mongod.exe with the --install option. To use an alternate dbpath, specify
 the path in the configuration file (e.g., C:/mongodb/mongod.cfg) or on
 the command line with the --dbpath option. You can put the database in
-any directory on the filesystem.
+any directory on the filesystem. For example:
 
-   mongd.exe -install -dbpath c:/mongodb -log c:/Temp/mongolog.txt
+
+    mongd.exe -install -dbpath c:/mongodb -log c:/Temp/mongolog.txt
+
+
+You will have to create a directory C:\\mongodb for the command above.
+
+
 
 Python dependencies
 ++++++++++++++++++++
-First install Python 2.7.12 set your path to python.exe. Checkout the spectrumdb distribution from github. 
 
-Get pip. 
+1. First install Python 2.7.12 set your path to python.exe. Get it from here:
+
+
+   https://www.python.org/downloads/release/python-2712/
+
+
+2. Checkout the spectrumdb distribution from github. 
+
+3. Get pip using the get-pip.py script that is provided with the project. 
 
    python get-pip.py
 
 
-You can install most of the following dependencies from a github git shell  ( see https://desktop.github.com/ )
-using the following command:
+4. Install dependencies.  You can install most of the following dependencies from a 
+   github git shell  ( see https://desktop.github.com/ ) using the following command:
+
 
     python setup.py install 
+
     
-OR you can install each of the following manually using pip (if you don't want to install the github desktop) :
+**OR (less preferrably)** you can install each of the following manually using pip (if you don't want to install the github desktop) :
 
-- pymongo (pip install pymongo)
-- numpy (pip install numpy)
-- pytz (pip install pytz
-- npTDMS (*NOTE* Get this from the fork https://github.com/usnistgov/npTDMS )
+- pymongo ( *pip install pymongo* )
+- numpy ( *pip install numpy* )
+- pytz ( *pip install pytz* )
+- npTDMS (**NOTE** Get this from the fork https://github.com/usnistgov/npTDMS
+  and then install it using *python setup.py install*  )
 
-And then type python setup.py install 
+And then type *python setup.py install* on the project setup.py after installing
+all the dependencies manually. 
 
-Additionally, you will need to manually install the following:
+Additionally (in either case), you will need to manually install the following:
 
 - pyqt4 use the installer from here (does not install from setup.py):
+
     http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt4-4.11.4-gpl-Py2.7-Qt4.8.7-x64.exe  
+
 - Matlab engine connector for python. Follow the instructions here:
+
   https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html
 
 
@@ -119,7 +139,7 @@ There are two methods to populate the DB and browse the data.
 
 Via the GUI
 +++++++++++++
-The UI interactions are fairly obvious. We will not bore you by
+The GUI interactions are fairly obvious. We will not bore you by
 giving tiresome instructions.
 You do not need to start the GUI if you do not want to browse the data.
 You can use the command line interface to do all interactions as outlined

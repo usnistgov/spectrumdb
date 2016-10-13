@@ -128,7 +128,6 @@ def getApiKey():
         with open(pathname) as config:
             jsonData = json.load(config)
             GOOGLE_TIMEZONE_API_KEY = jsonData["GOOGLE_TIMEZONE_API_KEY"]
-            print GOOGLE_TIMEZONE_API_KEY
             return GOOGLE_TIMEZONE_API_KEY
     else:
         return os.environ.get("GOOGLE_TIMEZONE_API_KEY")

@@ -121,16 +121,18 @@ def getApiKey():
     in your environment as an environment variable.
     """
     global GOOGLE_TIMEZONE_API_KEY
-    if GOOGLE_TIMEZONE_API_KEY != None:
+    if GOOGLE_TIMEZONE_API_KEY is not None:
         return GOOGLE_TIMEZONE_API_KEY
     pathname = os.environ.get("HOME") + "/.sdbconfig"
     if os.path.exists(pathname ):
         with open(pathname) as config:
             jsonData = json.load(config)
             GOOGLE_TIMEZONE_API_KEY = jsonData["GOOGLE_TIMEZONE_API_KEY"]
+            print GOOGLE_TIMEZONE_API_KEY
             return GOOGLE_TIMEZONE_API_KEY
     else:
         return os.environ.get("GOOGLE_TIMEZONE_API_KEY")
+    #return "AIzaSyDSLQb3MLoc2LyI87B5h-FG8ut3YuLEbcw"
 
 
 

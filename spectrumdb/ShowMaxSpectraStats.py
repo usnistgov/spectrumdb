@@ -81,6 +81,7 @@ class MaxSpectraPlot(MyMplCanvas):
         self.iqr_dbm = metadata["iqr_dbm"]
         self.statusbar = statusbar
         self.axes = self.fig.add_subplot(111)
+        self.axes.axis(xmin=np.min(self.freqs),xmax=np.max(self.freqs))
         self.compute_initial_figure()
 
     def compute_initial_figure(self):

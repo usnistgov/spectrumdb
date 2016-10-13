@@ -320,7 +320,7 @@ def createDataset():
             if antenna is None or antenna == "" :
                 raise "Antenna string is null"
             gain = float(str(gainWidget.text()))
-            reflevel_dbm = float(str(reflevelWidget.text()))
+            #reflevel_dbm = float(str(reflevelWidget.text()))
             fmin = float(str(fminWidget.text()))
             fmax = float(str(fmaxWidget.text()))
             instrumentTz = str(instrumentTzWidget.text())
@@ -333,7 +333,7 @@ def createDataset():
                 instrument_tz=instrumentTz,
                 antenna=antenna,
                 gain=gain,
-                reflevel_dbm=reflevel_dbm,
+                #reflevel_dbm=reflevel_dbm,
                 flo_mhz=flo_mhz,
                 fmin=fmin,
                 fmax=fmax,

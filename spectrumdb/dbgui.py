@@ -40,6 +40,7 @@ from matplotlib.backends.backend_qt4agg \
 from matplotlib.figure import Figure
 import ShowMaxSpectraStats
 import os
+import thread
 
 activeColor = QColor(200,200,0)
 currentDataset = None
@@ -168,8 +169,6 @@ def drawMetadataList(metadataList):
 
     screenSize = QDesktopWidget().availableGeometry()
     tableWidget.itemClicked.connect(handleItemClicked)
-    #mainWindow.setFixedSize(getTableWidth(tableWidget),
-    #        screenSize.height() * 0.7)
     mainWindow.setWindowState(PyQt4.QtCore.Qt.WindowMaximized)
     mainWindow.setCentralWidget(tableWidget)
 
@@ -460,18 +459,25 @@ def configureDialog():
     layout.addWidget(cancel,row,1)
     dialog.exec_()
 
+def processQtEvents():
+    QApplication.processEvents()
+
 def populateDialog():
     """
     Dialog to select directory from which to populate the db.
     """
+    global currentDataset
     dialog = QDialog()
     dialog.setWindowTitle("Populate the db with data")
-    layout = QGridLayout()
-    dialog.setLayout(layout)
     dialog.setModal(0)
+    boxLayout = QBoxLayout(QBoxLayout.TopToBottom)
+    dialog.setLayout(boxLayout)
+    layout = QGridLayout()
+    boxLayout.addLayout(layout)
     row = 0
     layout.addWidget(QLabel("Dataset Name :"),row,0)
     nameWidget = QLineEdit()
+    nameWidget.setText(currentDataset["name"])
     layout.addWidget(nameWidget,row,1)
 
     row += 1
@@ -483,26 +489,29 @@ def populateDialog():
 
 
     def getDir():
-        fileDialog = QFileDialog()
-        fileDialog.setOption(QFileDialog.ShowDirsOnly)
-        def setDirName(dirName):
-            selectedFile = QFileDialog.getExistingDirectory(fileDialog)
-            dirNameWidget.setText(selectedFile)
-        fileDialog.directoryEntered.connect(setDirName)
-        fileDialog.exec_()
+        selectedFile = QFileDialog.getExistingDirectory(None,"Pick a data "
+            "folder", "/" , QFileDialog.ShowDirsOnly )
+        dirNameWidget.setText(selectedFile)
 
     pushButton.clicked.connect(getDir)
+    currentFile = QTextEdit()
+    currentFile.setReadOnly(True)
+    currentFile.verticalScrollBar()
+    currentFile.ensureCursorVisible()
 
     def populate():
         try:
-            populatedb.recursive_walk_metadata(str(nameWidget.text()),
+            populatedb.recursive_walk_metadata(currentFile, str(nameWidget.text()),
                     str(dirNameWidget.text()))
+            metadataList = populatedb.get_metadata_list(currentDataset["name"])
+            drawMetadataList(metadataList)
         except Exception as detail:
             var = traceback.format_exc()
             msgBox = QErrorMessage()
             msgBox.setModal(1)
             msgBox.showMessage(QString("error populating data set : " + var))
             msgBox.exec_()
+
 
     row += 1
     ok = QPushButton('Populate', dialog)
@@ -514,6 +523,8 @@ def populateDialog():
     cancel.clicked.connect(dialog.reject)
     cancel.setDefault(True)
     layout.addWidget(cancel,row,1)
+    row += 1
+    boxLayout.addWidget(currentFile)
     dialog.exec_()
 
 def importDialog():

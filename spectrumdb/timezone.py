@@ -131,7 +131,6 @@ def getApiKey():
             return GOOGLE_TIMEZONE_API_KEY
     else:
         return os.environ.get("GOOGLE_TIMEZONE_API_KEY")
-    #return "AIzaSyDSLQb3MLoc2LyI87B5h-FG8ut3YuLEbcw"
 
 
 

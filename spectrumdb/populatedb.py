@@ -310,7 +310,7 @@ def compute_peak_stats(dataset,fname) :
 
 
 
-def recursive_walk_metadata(dataset_name,folder):
+def recursive_walk_metadata(widget, dataset_name,folder):
     """
     Walk through the subfolders picking up the metadata and populating
     the metadata as a JSON document into mongodb.
@@ -322,7 +322,7 @@ def recursive_walk_metadata(dataset_name,folder):
     for folderName, subfolders, filenames in os.walk(folder):
            if subfolders:
                for subfolder in subfolders:
-                 recursive_walk_metadata(dataset_name,subfolder)
+                 recursive_walk_metadata(widget,dataset_name,subfolder)
 
            for filename in filenames:
                 pathname = os.path.abspath(folderName + "/"  + filename)
@@ -341,8 +341,15 @@ def recursive_walk_metadata(dataset_name,folder):
 
                 query = {"prefix":prefix}
                 metadata = get_metadata(dataset_name).find_one(query)
+
+                if widget is None:
+                   print "Processing ", prefix
+                else:
+                   import dbgui
+                   widget.insertPlainText(prefix + "\n")
+                   dbgui.processQtEvents()
+
                 if metadata is None:
-                    print "create record for ", prefix
                     metadata = {}
                     metadata["prefix"] = prefix
                     metadata[metadataType] = pathname
@@ -374,7 +381,7 @@ def recursive_walk_metadata(dataset_name,folder):
                         metadata["tdmsMetadata"] = tdmsMetadata
                     elif metadataType == "MaxSpectra":
                         metadata["maxSpectraStats"] = compute_peak_stats(
-                                dataset,filename)
+                                dataset,pathname)
                     get_metadata(dataset_name).update({"prefix":prefix},
                             metadata, upsert = False)
 
@@ -646,7 +653,7 @@ def main():
     elif action == "populate":
         root_dir = args.dir
         dataset_name = args.dataset_name
-        recursive_walk_metadata(dataset_name,root_dir)
+        recursive_walk_metadata(None,dataset_name,root_dir)
     elif action == "drop":
         dataset_name = args.dataset_name
         purge_dataset(dataset_name)

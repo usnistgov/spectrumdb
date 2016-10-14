@@ -178,13 +178,13 @@ def main():
             help="Dataset Name")
     parser.add_argument("-fc-mhz",type=int, default=3550,required=False,
             help="Center frequency where you expect to find Radar")
-    parser.add_argument("-radar3",type=str, default="N",required=False,
+    parser.add_argument("-radar3",type=str, default="U",required=False,
             help="Y/N specifies if radar3 is present")
     parser.add_argument("-min-snr",type=float, default=6,required=False,
             help="Min SNR")
-    parser.add_argument("-start-date",type=str, default=None,required=False,
+    parser.add_argument("-start-date",type=str, default='U',required=False,
             help="start date in '%Y-%m-%d %H:%M:%S' format")
-    parser.add_argument("-end-date",type=str, default=None,required=False,
+    parser.add_argument("-end-date",type=str, default='U',required=False,
             help="End date in '%Y-%m-%d %H:%M:%S' format")
 
     args = parser.parse_args()

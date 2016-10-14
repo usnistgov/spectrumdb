@@ -563,6 +563,8 @@ def importDialog():
             datasetName = currentDataset["name"]
             fileName = str(csvFileWidget.text())
             populatedb.import_csv_file(datasetName,fileName)
+            metadataList = populatedb.get_metadata_list(datasetName)
+            drawMetadataList(metadataList)
         except Exception as detail:
             var = traceback.format_exc()
             msgBox = QErrorMessage()
